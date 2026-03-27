@@ -68,7 +68,7 @@ body {
 	bottom: 0;
 	width: 100%;
 	max-width: 500px;
-	height: 5.5rem;
+	height: 7rem;
 	background-color: var(--bg-secondary);
 	border-top: 1px solid var(--border-color);
 	display: flex;
@@ -119,13 +119,13 @@ body {
 /* Specific floating action button for "Đặt Lệnh" */
 .nav-fab-container {
 	position: absolute;
-	top: -1.5rem;
+	top: -1.9rem;
 	left: 50%;
 	transform: translateX(-50%);
-	width: 4rem;
-	height: 4rem;
+	width: 3.5rem;
+	height: 3.5rem;
 	background-color: var(--text-success);
-	border-radius: 1.2rem;
+	border-radius: 1rem;
 	display: flex;
 	justify-content: center;
 	align-items: center;
