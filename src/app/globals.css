@@ -90,7 +90,7 @@ body {
 	font-weight: 500;
 	gap: 0.6rem;
 	position: relative;
-	padding-bottom: 2.2rem;
+	padding-bottom: 2.5rem;
 }
 .nav-item2 {
 	display: flex;
@@ -110,7 +110,7 @@ body {
 .nav-item.active::before {
 	content: "";
 	position: absolute;
-	top: -1px;
+	top: -2px;
 	left: 50%;
 	transform: translateX(-50%);
 	width: 100%;
@@ -130,7 +130,7 @@ body {
 /* Specific floating action button for "Đặt Lệnh" */
 .nav-fab-container {
 	position: absolute;
-	top: -1.7rem;
+	top: -1.9rem;
 	left: 50%;
 	transform: translateX(-50%);
 	width: 3.5rem;
@@ -145,12 +145,30 @@ body {
 	border: none;
 }
 
-/* Move Danh mục and Sổ lệnh items closer to center */
+.home-indicator {
+	position: absolute;
+	bottom: 0.8rem;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 134px;
+	height: 5px;
+	background-color: #ffffff;
+	border-radius: 100px;
+	opacity: 0.8;
+}
+
+/* Move items closer to center to match reference */
+.bottom-nav > a:nth-child(1) {
+	transform: translateX(0.1rem);
+}
 .bottom-nav > a:nth-child(2) {
 	transform: translateX(0.2rem);
 }
 .bottom-nav > a:nth-child(4) {
 	transform: translateX(-0.2rem);
+}
+.bottom-nav > a:nth-child(5) {
+	transform: translateX(-0.1rem);
 }
 
 .nav-fab-container img {
@@ -160,7 +178,7 @@ body {
 .screen-container {
 	flex: 1;
 	overflow-y: auto;
-	padding-bottom: 80px; /* space for bottom nav */
+	padding-bottom: 120px; /* space for bottom nav */
 }
 
 /* Common Header */

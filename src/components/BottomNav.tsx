@@ -66,6 +66,8 @@ export default function BottomNav() {
 				/>
 				<span>Tiện ích</span>
 			</Link>
+
+			<div className="home-indicator" />
 		</nav>
 	);
 }
