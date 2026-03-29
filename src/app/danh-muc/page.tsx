@@ -30,8 +30,8 @@ const SortIcon = ({
 		style={{
 			display: "flex",
 			flexDirection: "column",
-			gap: "2px",
-			marginLeft: "4px",
+			gap: "0.125rem",
+			marginLeft: "0.25rem",
 		}}
 	>
 		<svg
@@ -386,7 +386,7 @@ export default function PortfolioPage() {
 								style={{
 									display: "flex",
 									justifyContent: "space-between",
-									padding: "0px 0px 12px 0px",
+									padding: "0 0 0.75rem 0",
 									// borderBottom: "1px solid rgba(255,255,255,0.05)",
 									color: "var(--text-secondary)",
 									fontSize: "0.8rem",
@@ -420,7 +420,9 @@ export default function PortfolioPage() {
 										display: "flex",
 										alignItems: "center",
 										justifyContent: "flex-end",
-										paddingRight: "72px",
+										paddingRight: "4.5rem",
+										position: "relative",
+										right: "0.2rem",
 										cursor: "pointer",
 									}}
 								>
@@ -442,7 +444,7 @@ export default function PortfolioPage() {
 										alignItems: "center",
 										justifyContent: "flex-end",
 										position: "relative",
-										right: "33px",
+										right: "2.2625rem",
 										cursor: "pointer",
 									}}
 								>
@@ -464,6 +466,8 @@ export default function PortfolioPage() {
 										alignItems: "center",
 										justifyContent: "flex-end",
 										position: "relative",
+										right: "1.2rem",
+										fontSize: "0.8rem",
 										// right: "17px",
 										cursor: "pointer",
 									}}
@@ -529,18 +533,18 @@ export default function PortfolioPage() {
 												fontSize: "0.9rem",
 												fontWeight: "350",
 												color: "#ffffff",
-												marginBottom: "4px",
-												marginTop: "-3px",
+												marginBottom: "0.25rem",
+												marginTop: "-0.1875rem",
 											}}
 										>
 											{stock.sym}
 										</div>
 										<div
 											style={{
-												fontSize: "12px",
+												fontSize: "0.85rem",
 												color: stock.color,
 												fontWeight: "400",
-												marginTop: "8px",
+												marginTop: "0.5rem",
 											}}
 										>
 											{stock.cur} ({stock.chg})
@@ -552,12 +556,12 @@ export default function PortfolioPage() {
 										style={{
 											flex: 1,
 											textAlign: "right",
-											paddingRight: "65px",
+											paddingRight: "4.4875rem",
 										}}
 									>
 										<div
 											style={{
-												fontSize: "12.5px",
+												fontSize: "0.885rem",
 												fontWeight: "400",
 												color: "#ffffff",
 											}}
@@ -572,12 +576,12 @@ export default function PortfolioPage() {
 											flex: 0.8,
 											textAlign: "right",
 											position: "relative",
-											right: "35px",
+											right: "2.5125rem",
 										}}
 									>
 										<div
 											style={{
-												fontSize: "12.5px",
+												fontSize: "0.885rem",
 												fontWeight: "400",
 												color: "#ffffff",
 											}}
@@ -592,8 +596,8 @@ export default function PortfolioPage() {
 											flex: 1.4,
 											textAlign: "right",
 											position: "relative",
-											right: "-2px",
-											top: "-3px",
+											right: "0.125rem",
+											top: "-0.1875rem",
 										}}
 									>
 										<div
@@ -602,10 +606,10 @@ export default function PortfolioPage() {
 											}
 											style={{
 												position: "relative",
-												top: "2px",
-												fontSize: "12.5px",
+												top: "0.125rem",
+												fontSize: "0.885rem",
 												fontWeight: "600",
-												marginBottom: "2px",
+												marginBottom: "0.125rem",
 												color: stock.pnlColor.startsWith("#")
 													? stock.pnlColor
 													: undefined,
@@ -618,10 +622,10 @@ export default function PortfolioPage() {
 												display: "flex",
 												justifyContent: "flex-end",
 												alignItems: "center",
-												gap: "4px",
-												marginTop: "8px",
+												gap: "0.25rem",
+												marginTop: "0.5rem",
 												position: "relative",
-												right: "4px",
+												right: "0.575rem",
 											}}
 										>
 											{stock.pnlP !== "0.00%" && stock.pnlP !== "--%" && (
@@ -648,8 +652,8 @@ export default function PortfolioPage() {
 												}
 												style={{
 													position: "relative",
-													left: "3px",
-													fontSize: "11.5px",
+													left: "0.1875rem",
+													fontSize: "0.84375rem",
 													fontWeight: "450",
 													color: stock.pnlColor.startsWith("#")
 														? stock.pnlColor
@@ -676,19 +680,19 @@ export default function PortfolioPage() {
 									className="bottom-sheet"
 									style={{
 										backgroundColor: "#1a1a1a",
-										borderTopLeftRadius: "24px",
-										borderTopRightRadius: "24px",
-										padding: "12px 14px 40px 14px",
+										borderTopLeftRadius: "1.5rem",
+										borderTopRightRadius: "1.5rem",
+										padding: "0.75rem 0.875rem 2.5rem 0.875rem",
 										height: "63vh",
 									}}
 								>
 									<div
 										className="bottom-sheet-handle"
 										style={{
-											width: "36px",
-											height: "5px",
+											width: "2.25rem",
+											height: "0.3125rem",
 											backgroundColor: "#373b45",
-											marginBottom: "24px",
+											marginBottom: "1.5rem",
 										}}
 									></div>
 
@@ -696,9 +700,10 @@ export default function PortfolioPage() {
 										style={{
 											display: "flex",
 											flexDirection: "column",
-											gap: "12px",
-											fontSize: "11.5px",
+											gap: "0.75rem",
+											fontSize: "0.8125rem",
 											color: "#8a8d9b",
+											paddingLeft: "0.3875rem",
 										}}
 									>
 										<div
@@ -711,7 +716,14 @@ export default function PortfolioPage() {
 											<span style={{ color: "#ffffff", fontWeight: "300" }}>
 												Mã chứng khoán
 											</span>
-											<span style={{ color: "#ffffff", fontWeight: "300" }}>
+											<span
+												style={{
+													color: "#ffffff",
+													fontWeight: "300",
+													position: "relative",
+													right: "0.58rem",
+												}}
+											>
 												{activeItem.symbol}
 											</span>
 										</div>
@@ -720,10 +732,18 @@ export default function PortfolioPage() {
 												display: "flex",
 												justifyContent: "space-between",
 												alignItems: "center",
+												marginTop: "0.1875rem",
 											}}
 										>
 											<span>Tổng khối lượng CK</span>
-											<span style={{ color: "#ffffff", fontWeight: "300" }}>
+											<span
+												style={{
+													color: "#ffffff",
+													fontWeight: "300",
+													position: "relative",
+													right: "0.58rem",
+												}}
+											>
 												{formatMoney(activeItem.total_qty)}
 											</span>
 										</div>
@@ -732,10 +752,18 @@ export default function PortfolioPage() {
 												display: "flex",
 												justifyContent: "space-between",
 												alignItems: "center",
+												marginTop: "0.1875rem",
 											}}
 										>
 											<span>Giá vốn trung bình</span>
-											<span style={{ color: "#ffffff", fontWeight: "300" }}>
+											<span
+												style={{
+													color: "#ffffff",
+													fontWeight: "300",
+													position: "relative",
+													right: "0.58rem",
+												}}
+											>
 												{activeItem.avg_price.toFixed(2)}
 											</span>
 										</div>
@@ -744,10 +772,19 @@ export default function PortfolioPage() {
 												display: "flex",
 												justifyContent: "space-between",
 												alignItems: "center",
+												marginTop: "0.1875rem",
 											}}
 										>
 											<span>Gốc đầu tư</span>
-											<span style={{ color: "#ffffff", fontWeight: "300" }}>
+											<span
+												style={{
+													color: "#ffffff",
+													fontWeight: "300",
+													position: "relative",
+													right: "0.58rem",
+													fontSize: "0.838rem",
+												}}
+											>
 												{formatMoney(activeItem.cost_value)} đ
 											</span>
 										</div>
@@ -756,10 +793,20 @@ export default function PortfolioPage() {
 												display: "flex",
 												justifyContent: "space-between",
 												alignItems: "center",
+												marginTop: "0.1875rem",
 											}}
 										>
 											<span>Giá trị thị trường</span>
-											<span style={{ color: "#ffffff", fontWeight: "300" }}>
+											<span
+												style={{
+													color: "#ffffff",
+													fontWeight: "300",
+													position: "relative",
+													right: "0.58rem",
+													fontSize: "0.838rem",
+													top: "-0.1rem",
+												}}
+											>
 												{formatMoney(activeItem.market_value)} đ
 											</span>
 										</div>
@@ -768,6 +815,8 @@ export default function PortfolioPage() {
 												display: "flex",
 												justifyContent: "space-between",
 												alignItems: "center",
+												marginTop: "0.2875rem",
+												paddingLeft: "0.13rem",
 											}}
 										>
 											<span style={{ color: "#ffffff", fontWeight: "300" }}>
@@ -779,7 +828,12 @@ export default function PortfolioPage() {
 														? "text-success"
 														: "text-danger"
 												}
-												style={{ fontWeight: "400" }}
+												style={{
+													fontWeight: "400",
+													position: "relative",
+													right: "0.58rem",
+													fontSize: "0.885rem",
+												}}
 											>
 												{activeItem.unrealized_pnl >= 0 ? "+" : ""}{" "}
 												{formatMoney(activeItem.unrealized_pnl)} đ (
@@ -790,7 +844,7 @@ export default function PortfolioPage() {
 										<div
 											style={{
 												borderTop: "0.5px solid rgba(255,255,255,0.1)",
-												margin: "20px 0 8px 0",
+												margin: "1.25rem 0 0.5rem 0",
 											}}
 										></div>
 
@@ -800,13 +854,22 @@ export default function PortfolioPage() {
 												justifyContent: "space-between",
 												alignItems: "center",
 												position: "relative",
-												top: "6px",
+												top: "0.25rem",
+												paddingLeft: "0.1875rem",
 											}}
 										>
 											<span style={{ color: "#ffffff", fontWeight: "300" }}>
 												Khối lượng CK khả dụng
 											</span>
-											<span style={{ color: "#ffffff", fontWeight: "300" }}>
+											<span
+												style={{
+													color: "#ffffff",
+													fontWeight: "300",
+													position: "relative",
+													right: "0.58rem",
+													fontSize: "0.885rem",
+												}}
+											>
 												{formatMoney(activeItem.available_qty)}
 											</span>
 										</div>
@@ -816,11 +879,20 @@ export default function PortfolioPage() {
 												justifyContent: "space-between",
 												alignItems: "center",
 												position: "relative",
-												top: "6px",
+												top: "0.25rem",
+												paddingLeft: "0.1875rem",
 											}}
 										>
 											<span>CK chờ về</span>
-											<span style={{ color: "#ffffff", fontWeight: "300" }}>
+											<span
+												style={{
+													color: "#ffffff",
+													fontWeight: "300",
+													position: "relative",
+													right: "0.58rem",
+													fontSize: "0.885rem",
+												}}
+											>
 												T0: {activeItem.t0_qty} T1:{" "}
 												{formatMoney(activeItem.t1_qty)} T2: {activeItem.t2_qty}
 											</span>
@@ -831,11 +903,20 @@ export default function PortfolioPage() {
 												justifyContent: "space-between",
 												alignItems: "center",
 												position: "relative",
-												top: "6px",
+												top: "0.455rem",
+												paddingLeft: "0.1875rem",
 											}}
 										>
 											<span>Quyền chờ về</span>
-											<span style={{ color: "#ffffff", fontWeight: "300" }}>
+											<span
+												style={{
+													color: "#ffffff",
+													fontWeight: "300",
+													position: "relative",
+													right: "0.58rem",
+													fontSize: "0.885rem",
+												}}
+											>
 												0
 											</span>
 										</div>
@@ -845,11 +926,20 @@ export default function PortfolioPage() {
 												justifyContent: "space-between",
 												alignItems: "center",
 												position: "relative",
-												top: "6px",
+												top: "0.565rem",
+												paddingLeft: "0.1875rem",
 											}}
 										>
 											<span>CK bị hạn chế</span>
-											<span style={{ color: "#ffffff", fontWeight: "300" }}>
+											<span
+												style={{
+													color: "#ffffff",
+													fontWeight: "300",
+													position: "relative",
+													right: "0.58rem",
+													fontSize: "0.885rem",
+												}}
+											>
 												0
 											</span>
 										</div>
@@ -859,11 +949,20 @@ export default function PortfolioPage() {
 												justifyContent: "space-between",
 												alignItems: "center",
 												position: "relative",
-												top: "6px",
+												top: "0.61rem",
+												paddingLeft: "0.1875rem",
 											}}
 										>
 											<span>Tỉ trọng trong danh mục</span>
-											<span style={{ color: "#ffffff", fontWeight: "300" }}>
+											<span
+												style={{
+													color: "#ffffff",
+													fontWeight: "300",
+													position: "relative",
+													right: "0.58rem",
+													fontSize: "0.885rem",
+												}}
+											>
 												41.16%
 											</span>
 										</div>
@@ -871,18 +970,19 @@ export default function PortfolioPage() {
 
 									<div
 										className="action-buttons"
-										style={{ display: "flex", gap: "8px", marginTop: "58px" }}
+										style={{ display: "flex", gap: "0.5rem", marginTop: "3.875rem" }}
 									>
 										<button
 											style={{
 												flex: 1,
-												height: "44px",
-												borderRadius: "12px",
+												height: "2.975rem",
+												borderRadius: "0.75rem",
 												background: "#0ea369",
 												color: "#ffffff",
 												border: "none",
 												fontWeight: "600",
-												fontSize: "15px",
+												fontSize: "0.9375rem",
+												marginLeft: "0.1875rem",
 											}}
 											onClick={() =>
 												router.push(
@@ -895,13 +995,14 @@ export default function PortfolioPage() {
 										<button
 											style={{
 												flex: 1,
-												height: "44px",
-												borderRadius: "12px",
+												height: "2.975rem",
+												borderRadius: "0.75rem",
 												background: "#f04b4b",
 												color: "#ffffff",
 												border: "none",
 												fontWeight: "600",
-												fontSize: "15px",
+												fontSize: "0.9375rem",
+												marginRight: "0.1875rem",
 											}}
 											onClick={() =>
 												router.push(
