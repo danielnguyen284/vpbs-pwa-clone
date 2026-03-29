@@ -20,8 +20,8 @@ export const metadata: Metadata = {
 		title: "VPBS Demo",
 	},
 	icons: {
-		icon: "/favicon.png",
-		apple: "/icon.png",
+		icon: "/icon-192x192.png",
+		apple: "/icon-512x512.png",
 	},
 };
 
