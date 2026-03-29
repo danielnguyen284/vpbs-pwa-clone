@@ -678,7 +678,7 @@ export default function PortfolioPage() {
 														fontWeight: "450",
 													}}
 												>
-													{stock.unrealized_pnl > 0 ? "+" : ""}
+													{/* {stock.unrealized_pnl > 0 ? "+" : ""} */}
 													{stock.unrealized_pnl_percent.toFixed(2)}%
 												</span>
 											</div>
