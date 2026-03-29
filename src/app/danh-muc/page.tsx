@@ -146,7 +146,6 @@ export default function PortfolioPage() {
 						height: "1.25rem",
 						filter: "brightness(0) invert(1)",
 						marginBottom: "0.2rem",
-						marginRight: "-0.2rem",
 					}}
 					alt="Search"
 				/>
@@ -543,8 +542,9 @@ export default function PortfolioPage() {
 											style={{
 												fontSize: "0.85rem",
 												color: stock.color,
-												fontWeight: "400",
+												fontWeight: "350",
 												marginTop: "0.5rem",
+												letterSpacing: "0.04rem",
 											}}
 										>
 											{stock.cur} ({stock.chg})
@@ -557,6 +557,7 @@ export default function PortfolioPage() {
 											flex: 1,
 											textAlign: "right",
 											paddingRight: "4.4875rem",
+											marginTop: "-0.1875rem",
 										}}
 									>
 										<div
@@ -576,6 +577,7 @@ export default function PortfolioPage() {
 											flex: 0.8,
 											textAlign: "right",
 											position: "relative",
+											marginTop: "-0.1875rem",
 											right: "2.5125rem",
 										}}
 									>
@@ -596,7 +598,7 @@ export default function PortfolioPage() {
 											flex: 1.4,
 											textAlign: "right",
 											position: "relative",
-											right: "0.125rem",
+											// right: "0.125rem",
 											top: "-0.1875rem",
 										}}
 									>
@@ -610,6 +612,7 @@ export default function PortfolioPage() {
 												fontSize: "0.885rem",
 												fontWeight: "600",
 												marginBottom: "0.125rem",
+												letterSpacing: "0.03rem",
 												color: stock.pnlColor.startsWith("#")
 													? stock.pnlColor
 													: undefined,
@@ -622,10 +625,11 @@ export default function PortfolioPage() {
 												display: "flex",
 												justifyContent: "flex-end",
 												alignItems: "center",
-												gap: "0.25rem",
+												// gap: "0.25rem",
 												marginTop: "0.5rem",
 												position: "relative",
 												right: "0.575rem",
+												letterSpacing: "0.06rem",
 											}}
 										>
 											{stock.pnlP !== "0.00%" && stock.pnlP !== "--%" && (
@@ -652,7 +656,7 @@ export default function PortfolioPage() {
 												}
 												style={{
 													position: "relative",
-													left: "0.1875rem",
+													left: "0.6rem",
 													fontSize: "0.84375rem",
 													fontWeight: "450",
 													color: stock.pnlColor.startsWith("#")
@@ -970,7 +974,11 @@ export default function PortfolioPage() {
 
 									<div
 										className="action-buttons"
-										style={{ display: "flex", gap: "0.5rem", marginTop: "3.875rem" }}
+										style={{
+											display: "flex",
+											gap: "0.5rem",
+											marginTop: "3.875rem",
+										}}
 									>
 										<button
 											style={{
