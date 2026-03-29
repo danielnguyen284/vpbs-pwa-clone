@@ -19,6 +19,10 @@ export const metadata: Metadata = {
 		statusBarStyle: "black-translucent",
 		title: "VPBS Demo",
 	},
+	icons: {
+		icon: "/favicon.png",
+		apple: "/icon.png",
+	},
 };
 
 export default function RootLayout({
