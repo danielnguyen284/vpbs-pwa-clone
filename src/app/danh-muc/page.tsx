@@ -15,10 +15,13 @@ interface PortfolioItem {
 	t1_qty: number;
 	t2_qty: number;
 	current_price: number;
+	ref_price: number;
 	market_value: number;
 	cost_value: number;
 	unrealized_pnl: number;
 	unrealized_pnl_percent: number;
+	daily_change_percent: number;
+	daily_pnl: number;
 }
 
 const SortIcon = ({
@@ -96,6 +99,35 @@ export default function PortfolioPage() {
 	const totalMarket = items.reduce((acc, curr) => acc + curr.market_value, 0);
 	const totalPnl = totalMarket - totalCost;
 	const totalPnlPercent = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
+	const totalDailyPnl = items.reduce(
+		(acc, curr) => acc + (curr.daily_pnl || 0),
+		0,
+	);
+
+	const sortedItems = [...items].sort((a, b) => {
+		if (!sortConfig) return 0;
+		const { key, direction } = sortConfig;
+		let valA: any = 0;
+		let valB: any = 0;
+
+		if (key === "symbol") {
+			valA = a.symbol;
+			valB = b.symbol;
+		} else if (key === "cost_price") {
+			valA = a.avg_price;
+			valB = b.avg_price;
+		} else if (key === "qty") {
+			valA = a.total_qty;
+			valB = b.total_qty;
+		} else if (key === "pnl") {
+			valA = a.unrealized_pnl;
+			valB = b.unrealized_pnl;
+		}
+
+		if (valA < valB) return direction === "asc" ? -1 : 1;
+		if (valA > valB) return direction === "asc" ? 1 : -1;
+		return 0;
+	});
 
 	const totalAssets = balance + totalMarket;
 
@@ -237,7 +269,7 @@ export default function PortfolioPage() {
 											marginTop: "0.5rem",
 										}}
 									>
-										415,156,070{" "}
+										{formatMoney(totalMarket)}{" "}
 										<span style={{ fontSize: "16px", fontWeight: "500" }}>
 											đ
 										</span>
@@ -291,7 +323,7 @@ export default function PortfolioPage() {
 											letterSpacing: "0.05rem",
 										}}
 									>
-										433,936,383 đ
+										{formatMoney(totalCost)} đ
 									</div>
 								</div>
 								<div style={{ textAlign: "right" }}>
@@ -307,12 +339,16 @@ export default function PortfolioPage() {
 									<div
 										style={{
 											fontSize: "0.9rem",
-											color: "var(--text-success)",
+											color:
+												totalDailyPnl >= 0
+													? "var(--text-success)"
+													: "var(--text-danger)",
 											fontWeight: "350",
 											letterSpacing: "0.04rem",
 										}}
 									>
-										+18,126,980 đ
+										{totalDailyPnl > 0 ? "+" : ""}
+										{formatMoney(totalDailyPnl)} đ
 									</div>
 								</div>
 							</div>
@@ -344,12 +380,16 @@ export default function PortfolioPage() {
 										className="text-danger"
 										style={{
 											fontSize: "0.9rem",
-											color: "var(--text-danger)",
+											color:
+												totalPnl >= 0
+													? "var(--text-success)"
+													: "var(--text-danger)",
 											fontWeight: "350",
 											letterSpacing: "0.05rem",
 										}}
 									>
-										-18,780,313 đ
+										{totalPnl > 0 ? "+" : ""}
+										{formatMoney(totalPnl)} đ
 									</span>
 									<div
 										style={{
@@ -359,20 +399,28 @@ export default function PortfolioPage() {
 										}}
 									>
 										<img
-											src="/icons/arrows/ic_arrow_decrease.svg"
+											src={
+												totalPnl >= 0
+													? "/icons/arrows/ic_arrow_increase.svg"
+													: "/icons/arrows/ic_arrow_decrease.svg"
+											}
 											style={{ width: "0.8rem", height: "0.8rem" }}
-											alt="Decrease"
+											alt={totalPnl >= 0 ? "Increase" : "Decrease"}
 										/>
 										<span
 											className="text-danger"
 											style={{
 												fontSize: "0.9rem",
-												color: "var(--text-danger)",
+												color:
+													totalPnl >= 0
+														? "var(--text-success)"
+														: "var(--text-danger)",
 												fontWeight: "350",
 												letterSpacing: "0.04rem",
 											}}
 										>
-											-4.33%
+											{totalPnl > 0 ? "+" : ""}
+											{totalPnlPercent.toFixed(2)}%
 										</span>
 									</div>
 								</div>
@@ -483,193 +531,161 @@ export default function PortfolioPage() {
 							</div>
 
 							{/* Stock Rows */}
-							{[
-								{
-									sym: "CII",
-									cur: "17.80",
-									chg: "+6.91%",
-									cost: "17.70",
-									kl: "9,601",
-									pnl: "+924,672 đ",
-									pnlP: "0.54%",
-									color: "#e44af2",
-									pnlColor: "text-success",
-								},
-							].map((stock, idx) => (
-								<div
-									key={idx}
-									onClick={() =>
-										setActiveItem({
-											_id: "1",
-											symbol: "CII",
-											avg_price: 17.7,
-											total_qty: 9601,
-											available_qty: 7601,
-											t0_qty: 0,
-											t1_qty: 2000,
-											t2_qty: 0,
-											current_price: 17.8,
-											market_value: 170897800,
-											cost_value: 169973128,
-											unrealized_pnl: 924672,
-											unrealized_pnl_percent: 0.54,
-										})
-									}
-									style={{
-										display: "flex",
-										justifyContent: "space-between",
-										alignItems: "center",
-										padding: "0.8rem 0",
-										letterSpacing: "0.02rem",
-										borderBottom: "1px solid rgba(255,255,255,0.05)",
-										cursor: "pointer",
-									}}
-								>
-									{/* Symbol and current price */}
-									<div style={{ flex: 1.8 }}>
+							{sortedItems.map((stock, idx) => {
+								const chg = stock.daily_change_percent || 0;
+								const chgColor =
+									chg > 0
+										? "var(--text-success)"
+										: chg < 0
+											? "var(--text-danger)"
+											: "#e2e2e2";
+								const pnlColor =
+									stock.unrealized_pnl >= 0 ? "text-success" : "text-danger";
+
+								return (
+									<div
+										key={stock._id || idx}
+										onClick={() => setActiveItem(stock)}
+										style={{
+											display: "flex",
+											justifyContent: "space-between",
+											alignItems: "center",
+											padding: "0.8rem 0",
+											letterSpacing: "0.02rem",
+											borderBottom: "1px solid rgba(255,255,255,0.05)",
+											cursor: "pointer",
+										}}
+									>
+										{/* Symbol and current price */}
+										<div style={{ flex: 1.8 }}>
+											<div
+												style={{
+													fontSize: "0.9rem",
+													fontWeight: "350",
+													color: "#ffffff",
+													marginBottom: "0.25rem",
+													marginTop: "-0.1875rem",
+												}}
+											>
+												{stock.symbol}
+											</div>
+											<div
+												style={{
+													fontSize: "0.85rem",
+													fontWeight: "350",
+													marginTop: "0.5rem",
+													letterSpacing: "0.04rem",
+													color: chgColor,
+												}}
+											>
+												{stock.current_price.toFixed(2)} ({chg >= 0 ? "+" : ""}
+												{chg.toFixed(2)}%)
+											</div>
+										</div>
+
+										{/* Avg Cost */}
 										<div
 											style={{
-												fontSize: "0.9rem",
-												fontWeight: "350",
-												color: "#ffffff",
-												marginBottom: "0.25rem",
+												flex: 1,
+												textAlign: "right",
+												paddingRight: "4.4875rem",
 												marginTop: "-0.1875rem",
 											}}
 										>
-											{stock.sym}
+											<div
+												style={{
+													fontSize: "0.885rem",
+													fontWeight: "400",
+													color: "#ffffff",
+												}}
+											>
+												{stock.avg_price.toFixed(2)}
+											</div>
 										</div>
-										<div
-											style={{
-												fontSize: "0.85rem",
-												color: stock.color,
-												fontWeight: "350",
-												marginTop: "0.5rem",
-												letterSpacing: "0.04rem",
-											}}
-										>
-											{stock.cur} ({stock.chg})
-										</div>
-									</div>
 
-									{/* Avg Cost */}
-									<div
-										style={{
-											flex: 1,
-											textAlign: "right",
-											paddingRight: "4.4875rem",
-											marginTop: "-0.1875rem",
-										}}
-									>
+										{/* Quantity */}
 										<div
 											style={{
-												fontSize: "0.885rem",
-												fontWeight: "400",
-												color: "#ffffff",
-											}}
-										>
-											{stock.cost}
-										</div>
-									</div>
-
-									{/* Quantity */}
-									<div
-										style={{
-											flex: 0.8,
-											textAlign: "right",
-											position: "relative",
-											marginTop: "-0.1875rem",
-											right: "2.5125rem",
-										}}
-									>
-										<div
-											style={{
-												fontSize: "0.885rem",
-												fontWeight: "400",
-												color: "#ffffff",
-											}}
-										>
-											{stock.kl}
-										</div>
-									</div>
-
-									{/* PNL */}
-									<div
-										style={{
-											flex: 1.4,
-											textAlign: "right",
-											position: "relative",
-											// right: "0.125rem",
-											top: "-0.1875rem",
-										}}
-									>
-										<div
-											className={
-												stock.pnlColor.startsWith("#") ? "" : stock.pnlColor
-											}
-											style={{
+												flex: 0.8,
+												textAlign: "right",
 												position: "relative",
-												top: "0.125rem",
-												fontSize: "0.885rem",
-												fontWeight: "600",
-												marginBottom: "0.125rem",
-												letterSpacing: "0.03rem",
-												color: stock.pnlColor.startsWith("#")
-													? stock.pnlColor
-													: undefined,
+												marginTop: "-0.1875rem",
+												right: "2.5125rem",
 											}}
 										>
-											{stock.pnl}
+											<div
+												style={{
+													fontSize: "0.885rem",
+													fontWeight: "400",
+													color: "#ffffff",
+												}}
+											>
+												{formatMoney(stock.total_qty)}
+											</div>
 										</div>
+
+										{/* PNL */}
 										<div
 											style={{
-												display: "flex",
-												justifyContent: "flex-end",
-												alignItems: "center",
-												// gap: "0.25rem",
-												marginTop: "0.5rem",
+												flex: 1.4,
+												textAlign: "right",
 												position: "relative",
-												right: "0.575rem",
-												letterSpacing: "0.06rem",
+												// right: "0.125rem",
+												top: "-0.1875rem",
 											}}
 										>
-											{stock.pnlP !== "0.00%" && stock.pnlP !== "--%" && (
+											<div
+												className={pnlColor}
+												style={{
+													position: "relative",
+													top: "0.125rem",
+													fontSize: "0.885rem",
+													fontWeight: "600",
+													marginBottom: "0.125rem",
+													letterSpacing: "0.03rem",
+												}}
+											>
+												{stock.unrealized_pnl > 0 ? "+" : ""}
+												{formatMoney(stock.unrealized_pnl)} đ
+											</div>
+											<div
+												style={{
+													display: "flex",
+													justifyContent: "flex-end",
+													alignItems: "center",
+													// gap: "0.25rem",
+													marginTop: "0.5rem",
+													position: "relative",
+													right: "0.575rem",
+													letterSpacing: "0.06rem",
+												}}
+											>
 												<img
 													src={
-														stock.pnlColor === "text-success"
+														pnlColor === "text-success"
 															? "/icons/arrows/ic_arrow_increase.svg"
 															: "/icons/arrows/ic_arrow_decrease.svg"
 													}
 													style={{ width: "0.6rem", height: "0.6rem" }}
 													alt="Arrow"
 												/>
-											)}
-											{stock.pnlP === "--%" && (
-												<img
-													src="/icons/arrows/ic_arrow_increase.svg"
-													style={{ width: "0.6rem", height: "0.6rem" }}
-													alt="Arrow"
-												/>
-											)}
-											<span
-												className={
-													stock.pnlColor.startsWith("#") ? "" : stock.pnlColor
-												}
-												style={{
-													position: "relative",
-													left: "0.6rem",
-													fontSize: "0.84375rem",
-													fontWeight: "450",
-													color: stock.pnlColor.startsWith("#")
-														? stock.pnlColor
-														: undefined,
-												}}
-											>
-												{stock.pnlP}
-											</span>
+												<span
+													className={pnlColor}
+													style={{
+														position: "relative",
+														left: "0.6rem",
+														fontSize: "0.84375rem",
+														fontWeight: "450",
+													}}
+												>
+													{stock.unrealized_pnl > 0 ? "+" : ""}
+													{stock.unrealized_pnl_percent.toFixed(2)}%
+												</span>
+											</div>
 										</div>
 									</div>
-								</div>
-							))}
+								);
+							})}
 						</div>
 
 						{/* Bottom Sheet for Chi Tiết Danh Mục */}

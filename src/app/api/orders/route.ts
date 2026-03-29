@@ -53,8 +53,9 @@ export async function POST(req: Request) {
 
 		const totalValue = price * quantity * 1000;
 		const fee = totalValue * 0.0015; // 0.15% fee
+		const tax = side === "B" ? totalValue * 0.001 : 0; // 0.1% tax on sell
 		const costAfterFee = totalValue + fee;
-		const proceedsAfterFee = totalValue - fee;
+		const proceedsAfterFee = totalValue - fee - tax;
 		const requestedDate = new Date(order_date);
 
 		// Default status
@@ -106,7 +107,7 @@ export async function POST(req: Request) {
 					const newTotalQty = portfolioDoc.total_qty + quantity;
 					const totalCost =
 						portfolioDoc.avg_price * portfolioDoc.total_qty * 1000 +
-						costAfterFee;
+						totalValue; // Not including fee in cost
 					portfolioDoc.avg_price = totalCost / (newTotalQty * 1000);
 					portfolioDoc.total_qty = newTotalQty;
 					portfolioDoc.lots.push({ qty: quantity, date: requestedDate });
@@ -115,7 +116,7 @@ export async function POST(req: Request) {
 					await Portfolio.create({
 						userId: user._id,
 						symbol,
-						avg_price: costAfterFee / (quantity * 1000), // Adjusted for fee
+						avg_price: price, // Not including fee
 						total_qty: quantity,
 						lots: [{ qty: quantity, date: requestedDate }],
 					});
@@ -207,8 +208,8 @@ export async function POST(req: Request) {
 					pnl_percent: pnlPercent,
 				});
 
-				if (portfolioDoc.total_qty === 0) {
-					await portfolioDoc.deleteOne();
+				if (portfolioDoc.total_qty <= 0) {
+					await Portfolio.deleteOne({ _id: portfolioDoc._id });
 				} else {
 					await portfolioDoc.save();
 				}
@@ -225,6 +226,7 @@ export async function POST(req: Request) {
 			status,
 			filled_price: filledPrice,
 			fee: isMatched ? fee : 0,
+			tax: isMatched ? tax : 0,
 		});
 
 		return NextResponse.json({ message: "Order processed", order });

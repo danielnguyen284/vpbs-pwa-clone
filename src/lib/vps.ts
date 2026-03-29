@@ -12,6 +12,7 @@ export interface OHLCPoint {
   h: number;
   l: number;
   c: number;
+  ref?: number;
 }
 
 export async function fetchDailyOHLC(symbol: string, date: Date): Promise<OHLCPoint | null> {
@@ -39,7 +40,8 @@ export async function fetchDailyOHLC(symbol: string, date: Date): Promise<OHLCPo
         return {
           h: data.h[closestIdx],
           l: data.l[closestIdx],
-          c: data.c[closestIdx]
+          c: data.c[closestIdx],
+          ref: closestIdx > 0 ? data.c[closestIdx - 1] : data.c[closestIdx]
         };
       }
     }
