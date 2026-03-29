@@ -9,6 +9,8 @@
   "orientation": "portrait",
   "background_color": "#121620",
   "theme_color": "#121620",
+  "categories": ["finance", "business"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icon-192x192.png",
@@ -33,6 +35,42 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/mobile-1.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Giao dịch Chứng khoán"
+    },
+    {
+      "src": "/screenshots/mobile-2.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Danh mục Đầu tư"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Danh mục",
+      "short_name": "Danh mục",
+      "url": "/danh-muc",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Đặt lệnh",
+      "short_name": "Đặt lệnh",
+      "url": "/dat-lenh",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Sao kê",
+      "short_name": "Sao kê",
+      "url": "/sao-ke",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
     }
   ]
 }

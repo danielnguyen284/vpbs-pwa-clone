@@ -14,7 +14,12 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/_next') ||
     pathname.includes('favicon.ico') ||
     pathname.startsWith('/assets') ||
-    pathname.startsWith('/icons')
+    pathname.startsWith('/icons') ||
+    pathname.startsWith('/splash') ||
+    pathname.startsWith('/screenshots') ||
+    pathname.endsWith('.png') ||
+    pathname === '/sw.js' ||
+    pathname === '/workbox-f1770938.js'
   ) {
     return NextResponse.next();
   }
