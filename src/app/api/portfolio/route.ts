@@ -26,8 +26,10 @@ export async function GET() {
 				const ohlc = await fetchDailyOHLC(p.symbol, today);
 
 				let currentPrice = p.avg_price; // fallback to avg_price
+				let refPrice = p.avg_price;
 				if (ohlc && ohlc.c) {
 					currentPrice = ohlc.c; // latest close
+					refPrice = ohlc.ref !== undefined ? ohlc.ref : ohlc.c;
 				}
 
 				const todayUTC = Date.UTC(
@@ -64,6 +66,10 @@ export async function GET() {
 				const unrealizedPnlPercent =
 					costValue > 0 ? (unrealizedPnl / costValue) * 100 : 0;
 
+				const dailyChange = currentPrice - refPrice;
+				const dailyChangePercent = refPrice > 0 ? (dailyChange / refPrice) * 100 : 0;
+				const dailyPnl = dailyChange * p.total_qty * 1000;
+
 				return {
 					_id: p._id,
 					symbol: p.symbol,
@@ -74,10 +80,13 @@ export async function GET() {
 					t1_qty,
 					t2_qty,
 					current_price: currentPrice,
+					ref_price: refPrice,
 					market_value: marketValue,
 					cost_value: costValue,
 					unrealized_pnl: unrealizedPnl,
 					unrealized_pnl_percent: unrealizedPnlPercent,
+					daily_change_percent: dailyChangePercent,
+					daily_pnl: dailyPnl,
 				};
 			}),
 		);

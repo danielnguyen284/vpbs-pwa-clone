@@ -10,6 +10,7 @@ export interface IOrder extends Document {
   status: 'Khớp hết' | 'Từ chối' | 'Chờ khớp';
   filled_price?: number;
   fee?: number;
+  tax?: number;
 }
 
 const OrderSchema: Schema = new Schema(
@@ -23,6 +24,7 @@ const OrderSchema: Schema = new Schema(
     status: { type: String, enum: ['Khớp hết', 'Từ chối', 'Chờ khớp'], default: 'Chờ khớp' },
     filled_price: { type: Number },
     fee: { type: Number, default: 0 },
+    tax: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
