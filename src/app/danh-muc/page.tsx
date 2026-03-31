@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
-import { ChevronLeft, TrendingUp, TrendingDown, X } from "lucide-react";
+import { TrendingUp, TrendingDown, X } from "lucide-react";
 
 interface PortfolioItem {
 	_id: string;
@@ -28,6 +29,7 @@ export default function PortfolioPage() {
 	const [balance, setBalance] = useState(0);
 	const [loading, setLoading] = useState(true);
 	const [activeItem, setActiveItem] = useState<PortfolioItem | null>(null);
+	const router = useRouter();
 
 	useEffect(() => {
 		Promise.all([
@@ -305,6 +307,30 @@ export default function PortfolioPage() {
 												{formatMoney(activeItem.unrealized_pnl)} đ ({activeItem.unrealized_pnl_percent.toFixed(2)}%)
 											</span>
 										</div>
+									</div>
+
+									{/* Buy / Sell buttons */}
+									<div style={{ display: "flex", gap: 10, marginTop: 20 }}>
+										<button
+											className="btn-buy"
+											style={{ fontFamily: "var(--font-family)" }}
+											onClick={() => {
+												setActiveItem(null);
+												router.push(`/dat-lenh?symbol=${activeItem.symbol}&side=M`);
+											}}
+										>
+											MUA
+										</button>
+										<button
+											className="btn-sell"
+											style={{ fontFamily: "var(--font-family)" }}
+											onClick={() => {
+												setActiveItem(null);
+												router.push(`/dat-lenh?symbol=${activeItem.symbol}&side=B`);
+											}}
+										>
+											BÁN
+										</button>
 									</div>
 								</div>
 							</>

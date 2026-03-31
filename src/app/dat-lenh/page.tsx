@@ -2,12 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { X } from "lucide-react";
 
 export default function OrderPlacementPage() {
-	const [symbol, setSymbol] = useState("");
-	const [side, setSide] = useState<"M" | "B">("M");
+	const searchParams = useSearchParams();
+	const initialSymbol = searchParams.get("symbol") || "";
+	const initialSide = searchParams.get("side") === "B" ? "B" : "M";
+
+	const [symbol, setSymbol] = useState(initialSymbol);
+	const [side, setSide] = useState<"M" | "B">(initialSide as "M" | "B");
 	const [price, setPrice] = useState("");
 	const [quantity, setQuantity] = useState("");
 	const [orderDate, setOrderDate] = useState(
