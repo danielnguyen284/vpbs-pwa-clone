@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import BottomNav from "@/components/BottomNav";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { ChevronLeft, TrendingUp, TrendingDown, X } from "lucide-react";
 
 interface PortfolioItem {
 	_id: string;
@@ -24,65 +23,11 @@ interface PortfolioItem {
 	daily_pnl: number;
 }
 
-const SortIcon = ({
-	activeDirection,
-}: {
-	activeDirection?: "asc" | "desc";
-}) => (
-	<div
-		style={{
-			display: "flex",
-			flexDirection: "column",
-			gap: "0.125rem",
-			marginLeft: "0.25rem",
-		}}
-	>
-		<svg
-			width="7"
-			height="4"
-			viewBox="0 0 7 4"
-			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<path
-				d="M3.5 0L7 4H0L3.5 0Z"
-				fill={activeDirection === "asc" ? "#FFFFFF" : "#6E6E6E"}
-			/>
-		</svg>
-		<svg
-			width="7"
-			height="4"
-			viewBox="0 0 7 4"
-			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<path
-				d="M3.5 4L0 0H7L3.5 4Z"
-				fill={activeDirection === "desc" ? "#FFFFFF" : "#6E6E6E"}
-			/>
-		</svg>
-	</div>
-);
-
 export default function PortfolioPage() {
-	const router = useRouter();
 	const [items, setItems] = useState<PortfolioItem[]>([]);
 	const [balance, setBalance] = useState(0);
 	const [loading, setLoading] = useState(true);
 	const [activeItem, setActiveItem] = useState<PortfolioItem | null>(null);
-	const [sortConfig, setSortConfig] = useState<{
-		key: string;
-		direction: "asc" | "desc";
-	} | null>(null);
-
-	const handleSort = (key: string) => {
-		setSortConfig((prev) => {
-			if (prev?.key === key) {
-				return { key, direction: prev.direction === "asc" ? "desc" : "asc" };
-			}
-			return { key, direction: "asc" };
-		});
-	};
 
 	useEffect(() => {
 		Promise.all([
@@ -99,943 +44,267 @@ export default function PortfolioPage() {
 	const totalMarket = items.reduce((acc, curr) => acc + curr.market_value, 0);
 	const totalPnl = totalMarket - totalCost;
 	const totalPnlPercent = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
-	const totalDailyPnl = items.reduce(
-		(acc, curr) => acc + (curr.daily_pnl || 0),
-		0,
-	);
-
-	const sortedItems = [...items].sort((a, b) => {
-		if (!sortConfig) return 0;
-		const { key, direction } = sortConfig;
-		let valA: any = 0;
-		let valB: any = 0;
-
-		if (key === "symbol") {
-			valA = a.symbol;
-			valB = b.symbol;
-		} else if (key === "cost_price") {
-			valA = a.avg_price;
-			valB = b.avg_price;
-		} else if (key === "qty") {
-			valA = a.total_qty;
-			valB = b.total_qty;
-		} else if (key === "pnl") {
-			valA = a.unrealized_pnl;
-			valB = b.unrealized_pnl;
-		}
-
-		if (valA < valB) return direction === "asc" ? -1 : 1;
-		if (valA > valB) return direction === "asc" ? 1 : -1;
-		return 0;
-	});
-
+	const totalDailyPnl = items.reduce((acc, curr) => acc + (curr.daily_pnl || 0), 0);
 	const totalAssets = balance + totalMarket;
 
 	const formatMoney = (val: number | null | undefined) =>
 		(val || 0).toLocaleString("vi-VN");
 
+	const pnlColor = (val: number) =>
+		val >= 0 ? "var(--text-success)" : "var(--text-danger)";
+
 	return (
 		<>
+			{/* Header */}
 			<header
 				className="header"
 				style={{
-					height: "95px",
-					padding: "0 8px 10px 8px",
-					display: "flex",
-					justifyContent: "space-between",
-					alignItems: "flex-end",
+					height: 56,
 					borderBottom: "none",
+					background: "var(--bg-primary)",
 				}}
 			>
-				<div
-					style={{
-						display: "flex",
-						alignItems: "flex-end",
-						gap: "1rem",
-						marginLeft: "0.4rem",
-					}}
-				>
-					<img
-						src="/icons/arrows/ic_arrow_left.svg"
-						style={{
-							width: "1.5rem",
-							height: "1.5rem",
-							filter: "brightness(0) invert(1)",
-							marginBottom: "0px",
-						}}
-						alt="Back"
-					/>
-					<div
-						style={{ fontSize: "clamp(18px, 4.5vw, 22px)", fontWeight: "600" }}
-					>
-						Danh mục nắm giữ
-					</div>
+				<div style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.01em" }}>
+					Danh mục
 				</div>
-				<img
-					src="/icons/header/ic_search2.svg"
-					style={{
-						width: "1.25rem",
-						height: "1.25rem",
-						filter: "brightness(0) invert(1)",
-						marginBottom: "0.2rem",
-					}}
-					alt="Search"
-				/>
 			</header>
 
-			<main className="screen-container" style={{ padding: 14 }}>
+			<main className="screen-container" style={{ padding: "0 16px 16px" }}>
 				{loading ? (
-					<div style={{ textAlign: "center", marginTop: 40 }}>Đang tải...</div>
+					<div style={{ padding: "40px 0", textAlign: "center" }}>
+						<div className="loading-shimmer" style={{ height: 120, marginBottom: 16 }} />
+						<div className="loading-shimmer" style={{ height: 60, marginBottom: 8 }} />
+						<div className="loading-shimmer" style={{ height: 60 }} />
+					</div>
 				) : (
 					<>
 						{/* Summary Card */}
-						<div
-							style={{
-								backgroundColor: "transparent",
-								borderRadius: 12,
-								marginBottom: 16,
-							}}
-						>
-							{/* Account selection row */}
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "space-between",
-									alignItems: "center",
-									marginTop: "0.2rem",
-									marginBottom: "0.5rem",
-									paddingRight: "0.2rem",
-								}}
-							>
-								<span
-									style={{
-										color: "var(--text-secondary)",
-										fontSize: "0.9rem",
-										letterSpacing: "0.02em",
-									}}
-								>
-									Tiểu khoản
-								</span>
-								<div
-									style={{ display: "flex", alignItems: "center", gap: "8px" }}
-								>
-									<span
-										style={{
-											color: "var(--text-secondary)",
-											fontSize: "0.9rem",
-											letterSpacing: "0.02em",
-										}}
-									>
-										Tất cả
-									</span>
-									<img
-										src="/icons/arrows/ic_arrow_next.svg"
-										style={{
-											width: "0.8rem",
-											height: "0.8rem",
-											filter: "brightness(0.7)",
-										}}
-										alt="Next"
-									/>
+						<div className="gradient-card" style={{ marginBottom: 20 }}>
+							{/* Total Assets Row */}
+							<div style={{ marginBottom: 16 }}>
+								<div style={{ color: "var(--text-secondary)", fontSize: 12, marginBottom: 4 }}>
+									Tổng tài sản
+								</div>
+								<div style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.01em" }}>
+									{formatMoney(totalAssets)}
+									<span style={{ fontSize: 14, fontWeight: 500, marginLeft: 4 }}>đ</span>
 								</div>
 							</div>
 
-							{/* Market Value and Action Button */}
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "space-between",
-									alignItems: "center",
-									marginBottom: 24,
-								}}
-							>
-								<div>
-									<div
-										style={{
-											color: "var(--text-secondary)",
-											fontSize: "0.8rem",
-											marginTop: "1rem",
-											marginBottom: "0.2rem",
-										}}
-									>
+							{/* Stats Grid */}
+							<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+								<div style={{ background: "var(--glass-bg)", borderRadius: "var(--radius-sm)", padding: "10px 12px" }}>
+									<div style={{ color: "var(--text-secondary)", fontSize: 11, marginBottom: 4 }}>
 										Giá trị thị trường
 									</div>
-									<div
-										style={{
-											fontSize: "1.2rem",
-											fontWeight: "500",
-											color: "#ffffff",
-											letterSpacing: "0.08rem",
-											marginTop: "0.5rem",
-										}}
-									>
-										{formatMoney(totalMarket)}{" "}
-										<span style={{ fontSize: "16px", fontWeight: "500" }}>
-											đ
-										</span>
+									<div style={{ fontSize: 14, fontWeight: 600 }}>
+										{formatMoney(totalMarket)} đ
 									</div>
 								</div>
-								<button
-									style={{
-										backgroundColor: "transparent",
-										border: "1px solid #f04b4b",
-										color: "#f04b4b",
-										width: "10rem",
-										height: "2.5rem",
-										display: "flex",
-										justifyContent: "center",
-										alignItems: "center",
-										borderRadius: "0.7rem",
-										fontSize: "0.9rem",
-										fontWeight: "500",
-										marginTop: "1.5rem",
-										letterSpacing: "0.02rem",
-									}}
-								>
-									Bán danh mục
-								</button>
+								<div style={{ background: "var(--glass-bg)", borderRadius: "var(--radius-sm)", padding: "10px 12px" }}>
+									<div style={{ color: "var(--text-secondary)", fontSize: 11, marginBottom: 4 }}>
+										Tiền mặt
+									</div>
+									<div style={{ fontSize: 14, fontWeight: 600 }}>
+										{formatMoney(balance)} đ
+									</div>
+								</div>
 							</div>
 
-							{/* Capital and Daily PL */}
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "space-between",
-									marginBottom: 12,
-									// marginTop: "-4px",
-								}}
-							>
+							{/* P&L Row */}
+							<div style={{
+								display: "flex",
+								justifyContent: "space-between",
+								marginTop: 12,
+								paddingTop: 12,
+								borderTop: "1px solid rgba(255,255,255,0.06)",
+							}}>
 								<div>
-									<div
-										style={{
-											color: "var(--text-secondary)",
-											fontSize: "0.8rem",
-											marginBottom: "0.2rem",
-										}}
-									>
-										Giá trị vốn
+									<div style={{ color: "var(--text-secondary)", fontSize: 11, marginBottom: 2 }}>
+										Lãi/lỗ dự kiến
 									</div>
-									<div
-										style={{
-											fontSize: "0.9rem",
-											color: "#ffffff",
-											fontWeight: "350",
-											letterSpacing: "0.05rem",
-										}}
-									>
-										{formatMoney(totalCost)} đ
+									<div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+										<span style={{ fontSize: 14, fontWeight: 600, color: pnlColor(totalPnl) }}>
+											{totalPnl > 0 ? "+" : ""}{formatMoney(totalPnl)} đ
+										</span>
+										<span style={{
+											fontSize: 12,
+											fontWeight: 500,
+											color: pnlColor(totalPnl),
+											background: totalPnl >= 0 ? "rgba(16,185,129,0.1)" : "rgba(239,68,68,0.1)",
+											padding: "2px 6px",
+											borderRadius: 4,
+										}}>
+											{totalPnl > 0 ? "+" : ""}{totalPnlPercent.toFixed(2)}%
+										</span>
 									</div>
 								</div>
 								<div style={{ textAlign: "right" }}>
-									<div
-										style={{
-											color: "var(--text-secondary)",
-											fontSize: "0.8rem",
-											marginBottom: "0.2rem",
-										}}
-									>
-										Lãi/lỗ trong ngày
+									<div style={{ color: "var(--text-secondary)", fontSize: 11, marginBottom: 2 }}>
+										Trong ngày
 									</div>
-									<div
-										style={{
-											fontSize: "0.9rem",
-											color:
-												totalDailyPnl >= 0
-													? "var(--text-success)"
-													: "var(--text-danger)",
-											fontWeight: "350",
-											letterSpacing: "0.04rem",
-										}}
-									>
-										{totalDailyPnl > 0 ? "+" : ""}
-										{formatMoney(totalDailyPnl)} đ
-									</div>
-								</div>
-							</div>
-
-							{/* Unrealized PL */}
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "space-between",
-									alignItems: "center",
-									paddingBottom: 16,
-									borderBottom: "1px solid rgba(255,255,255,0.1)",
-									// marginTop: "-8px",
-								}}
-							>
-								<span
-									style={{ color: "var(--text-secondary)", fontSize: "12.5px" }}
-								>
-									Lãi/lỗ dự kiến
-								</span>
-								<div
-									style={{
-										display: "flex",
-										alignItems: "center",
-										gap: "0.4rem",
-									}}
-								>
-									<span
-										className="text-danger"
-										style={{
-											fontSize: "0.9rem",
-											color:
-												totalPnl >= 0
-													? "var(--text-success)"
-													: "var(--text-danger)",
-											fontWeight: "350",
-											letterSpacing: "0.05rem",
-										}}
-									>
-										{totalPnl > 0 ? "+" : ""}
-										{formatMoney(totalPnl)} đ
+									<span style={{ fontSize: 14, fontWeight: 600, color: pnlColor(totalDailyPnl) }}>
+										{totalDailyPnl > 0 ? "+" : ""}{formatMoney(totalDailyPnl)} đ
 									</span>
-									<div
-										style={{
-											display: "flex",
-											alignItems: "center",
-											gap: "0.4rem",
-										}}
-									>
-										<img
-											src={
-												totalPnl >= 0
-													? "/icons/arrows/ic_arrow_increase.svg"
-													: "/icons/arrows/ic_arrow_decrease.svg"
-											}
-											style={{ width: "0.8rem", height: "0.8rem" }}
-											alt={totalPnl >= 0 ? "Increase" : "Decrease"}
-										/>
-										<span
-											className="text-danger"
-											style={{
-												fontSize: "0.9rem",
-												color:
-													totalPnl >= 0
-														? "var(--text-success)"
-														: "var(--text-danger)",
-												fontWeight: "350",
-												letterSpacing: "0.04rem",
-											}}
-										>
-											{totalPnl > 0 ? "+" : ""}
-											{totalPnlPercent.toFixed(2)}%
-										</span>
-									</div>
 								</div>
 							</div>
 						</div>
 
-						<div style={{ marginTop: "0px" }}>
-							{/* Table Header */}
-							<div
-								style={{
-									display: "flex",
-									justifyContent: "space-between",
-									padding: "0 0 0.75rem 0",
-									// borderBottom: "1px solid rgba(255,255,255,0.05)",
-									color: "var(--text-secondary)",
-									fontSize: "0.8rem",
-									fontWeight: "350",
-									// marginTop: "-1px",
-								}}
-							>
-								<div
-									onClick={() => handleSort("symbol")}
-									style={{
-										flex: 1.3,
-										display: "flex",
-										alignItems: "center",
-										cursor: "pointer",
-									}}
-								>
-									<span>Mã CK</span>
-									<SortIcon
-										activeDirection={
-											sortConfig?.key === "symbol"
-												? sortConfig.direction
-												: undefined
-										}
-									/>
-								</div>
-								<div
-									onClick={() => handleSort("cost_price")}
-									style={{
-										flex: 1.2,
-										textAlign: "right",
-										display: "flex",
-										alignItems: "center",
-										justifyContent: "flex-end",
-										paddingRight: "4.5rem",
-										position: "relative",
-										right: "0.2rem",
-										cursor: "pointer",
-									}}
-								>
-									<span>Giá vốn</span>
-									<SortIcon
-										activeDirection={
-											sortConfig?.key === "cost_price"
-												? sortConfig.direction
-												: undefined
-										}
-									/>
-								</div>
-								<div
-									onClick={() => handleSort("qty")}
-									style={{
-										flex: 0.8,
-										textAlign: "right",
-										display: "flex",
-										alignItems: "center",
-										justifyContent: "flex-end",
-										position: "relative",
-										right: "2.2625rem",
-										cursor: "pointer",
-									}}
-								>
-									<span>KL</span>
-									<SortIcon
-										activeDirection={
-											sortConfig?.key === "qty"
-												? sortConfig.direction
-												: undefined
-										}
-									/>
-								</div>
-								<div
-									onClick={() => handleSort("pnl")}
-									style={{
-										flex: 1.7,
-										textAlign: "right",
-										display: "flex",
-										alignItems: "center",
-										justifyContent: "flex-end",
-										position: "relative",
-										right: "1.2rem",
-										fontSize: "0.8rem",
-										// right: "17px",
-										cursor: "pointer",
-									}}
-								>
-									<span>Lãi/lỗ dự kiến</span>
-									<SortIcon
-										activeDirection={
-											sortConfig?.key === "pnl"
-												? sortConfig.direction
-												: undefined
-										}
-									/>
-								</div>
-							</div>
+						{/* Stock List Header */}
+						<div
+							style={{
+								display: "flex",
+								justifyContent: "space-between",
+								padding: "0 4px 10px",
+								color: "var(--text-muted)",
+								fontSize: 11,
+								fontWeight: 500,
+								textTransform: "uppercase",
+								letterSpacing: "0.05em",
+							}}
+						>
+							<span style={{ flex: 1.2 }}>Mã CK</span>
+							<span style={{ flex: 1, textAlign: "right" }}>Giá vốn</span>
+							<span style={{ flex: 0.8, textAlign: "right" }}>KL</span>
+							<span style={{ flex: 1.4, textAlign: "right" }}>Lãi/lỗ</span>
+						</div>
 
-							{/* Stock Rows */}
-							{sortedItems.map((stock, idx) => {
+						{/* Stock Rows */}
+						{items.length === 0 ? (
+							<div style={{
+								textAlign: "center",
+								padding: "40px 0",
+								color: "var(--text-muted)",
+								fontSize: 14,
+							}}>
+								Chưa có chứng khoán nào trong danh mục
+							</div>
+						) : (
+							items.map((stock, idx) => {
 								const chg = stock.daily_change_percent || 0;
-								const chgColor =
-									chg > 0
-										? "var(--text-success)"
-										: chg < 0
-											? "var(--text-danger)"
-											: "#e2e2e2";
-								const pnlColor =
-									stock.unrealized_pnl >= 0 ? "text-success" : "text-danger";
+								const chgColor = chg > 0 ? "var(--text-success)" : chg < 0 ? "var(--text-danger)" : "var(--text-secondary)";
+								const pnl = stock.unrealized_pnl;
 
 								return (
 									<div
 										key={stock._id || idx}
 										onClick={() => setActiveItem(stock)}
+										className="glass-card"
 										style={{
 											display: "flex",
 											justifyContent: "space-between",
 											alignItems: "center",
-											padding: "0.8rem 0",
-											letterSpacing: "0.02rem",
-											borderBottom: "1px solid rgba(255,255,255,0.05)",
+											padding: "12px 14px",
+											marginBottom: 8,
 											cursor: "pointer",
+											transition: "background 0.15s ease",
 										}}
 									>
-										{/* Symbol and current price */}
-										<div style={{ flex: 1.8 }}>
-											<div
-												style={{
-													fontSize: "0.9rem",
-													fontWeight: "350",
-													color: "#ffffff",
-													marginBottom: "0.25rem",
-													marginTop: "-0.1875rem",
-												}}
-											>
+										{/* Symbol */}
+										<div style={{ flex: 1.2 }}>
+											<div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>
 												{stock.symbol}
 											</div>
-											<div
-												style={{
-													fontSize: "0.85rem",
-													fontWeight: "350",
-													marginTop: "0.5rem",
-													letterSpacing: "0.04rem",
-													color: chgColor,
-												}}
-											>
+											<div style={{ fontSize: 12, color: chgColor }}>
 												{stock.current_price.toFixed(2)} ({chg >= 0 ? "+" : ""}
 												{chg.toFixed(2)}%)
 											</div>
 										</div>
 
 										{/* Avg Cost */}
-										<div
-											style={{
-												flex: 1,
-												textAlign: "right",
-												paddingRight: "4.4875rem",
-												marginTop: "-0.1875rem",
-											}}
-										>
-											<div
-												style={{
-													fontSize: "0.885rem",
-													fontWeight: "400",
-													color: "#ffffff",
-												}}
-											>
-												{stock.avg_price.toFixed(2)}
-											</div>
+										<div style={{ flex: 1, textAlign: "right", fontSize: 13, fontWeight: 500 }}>
+											{stock.avg_price.toFixed(2)}
 										</div>
 
 										{/* Quantity */}
-										<div
-											style={{
-												flex: 0.8,
-												textAlign: "right",
-												position: "relative",
-												marginTop: "-0.1875rem",
-												right: "2.5125rem",
-											}}
-										>
-											<div
-												style={{
-													fontSize: "0.885rem",
-													fontWeight: "400",
-													color: "#ffffff",
-												}}
-											>
-												{formatMoney(stock.total_qty)}
-											</div>
+										<div style={{ flex: 0.8, textAlign: "right", fontSize: 13, fontWeight: 500 }}>
+											{formatMoney(stock.total_qty)}
 										</div>
 
 										{/* PNL */}
-										<div
-											style={{
-												flex: 1.4,
-												textAlign: "right",
-												position: "relative",
-												// right: "0.125rem",
-												top: "-0.1875rem",
-											}}
-										>
-											<div
-												className={pnlColor}
-												style={{
-													position: "relative",
-													top: "0.125rem",
-													fontSize: "0.885rem",
-													fontWeight: "600",
-													marginBottom: "0.125rem",
-													letterSpacing: "0.03rem",
-												}}
-											>
-												{stock.unrealized_pnl > 0 ? "+" : ""}
-												{formatMoney(stock.unrealized_pnl)} đ
+										<div style={{ flex: 1.4, textAlign: "right" }}>
+											<div style={{
+												fontSize: 13,
+												fontWeight: 600,
+												color: pnlColor(pnl),
+												marginBottom: 2,
+											}}>
+												{pnl > 0 ? "+" : ""}{formatMoney(pnl)} đ
 											</div>
-											<div
-												style={{
-													display: "flex",
-													justifyContent: "flex-end",
-													alignItems: "center",
-													// gap: "0.25rem",
-													marginTop: "0.5rem",
-													position: "relative",
-													right: "0.575rem",
-													letterSpacing: "0.06rem",
-												}}
-											>
-												<img
-													src={
-														pnlColor === "text-success"
-															? "/icons/arrows/ic_arrow_increase.svg"
-															: "/icons/arrows/ic_arrow_decrease.svg"
-													}
-													style={{ width: "0.6rem", height: "0.6rem" }}
-													alt="Arrow"
-												/>
-												<span
-													className={pnlColor}
-													style={{
-														position: "relative",
-														left: "0.6rem",
-														fontSize: "0.84375rem",
-														fontWeight: "450",
-													}}
-												>
-													{/* {stock.unrealized_pnl > 0 ? "+" : ""} */}
-													{stock.unrealized_pnl_percent.toFixed(2)}%
-												</span>
+											<div style={{
+												fontSize: 11,
+												color: pnlColor(pnl),
+												display: "flex",
+												alignItems: "center",
+												justifyContent: "flex-end",
+												gap: 2,
+											}}>
+												{pnl >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+												{stock.unrealized_pnl_percent.toFixed(2)}%
 											</div>
 										</div>
 									</div>
 								);
-							})}
-						</div>
+							})
+						)}
 
-						{/* Bottom Sheet for Chi Tiết Danh Mục */}
+						{/* Detail Bottom Sheet */}
 						{activeItem && (
 							<>
-								<div
-									className="backdrop"
-									style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-									onClick={() => setActiveItem(null)}
-								></div>
-								<div
-									className="bottom-sheet"
-									style={{
-										backgroundColor: "#1a1a1a",
-										borderTopLeftRadius: "1.5rem",
-										borderTopRightRadius: "1.5rem",
-										padding: "0.75rem 0.875rem 2.5rem 0.875rem",
-										height: "63vh",
-									}}
-								>
-									<div
-										className="bottom-sheet-handle"
-										style={{
-											width: "2.25rem",
-											height: "0.3125rem",
-											backgroundColor: "#373b45",
-											marginBottom: "1.5rem",
-										}}
-									></div>
+								<div className="backdrop" onClick={() => setActiveItem(null)} />
+								<div className="bottom-sheet" style={{ padding: "16px 20px 32px" }}>
+									<div className="bottom-sheet-handle" />
 
-									<div
-										style={{
-											display: "flex",
-											flexDirection: "column",
-											gap: "0.75rem",
-											fontSize: "0.8125rem",
-											color: "#8a8d9b",
-											paddingLeft: "0.3875rem",
-										}}
-									>
-										<div
+									{/* Header */}
+									<div style={{
+										display: "flex",
+										justifyContent: "space-between",
+										alignItems: "center",
+										marginBottom: 20,
+									}}>
+										<h3 style={{ fontSize: 18, fontWeight: 700 }}>
+											{activeItem.symbol}
+										</h3>
+										<button
+											onClick={() => setActiveItem(null)}
 											style={{
-												display: "flex",
-												justifyContent: "space-between",
-												alignItems: "center",
+												background: "var(--glass-bg)",
+												border: "none",
+												borderRadius: 8,
+												padding: 6,
+												color: "var(--text-secondary)",
+												cursor: "pointer",
 											}}
 										>
-											<span style={{ color: "#ffffff", fontWeight: "300" }}>
-												Mã chứng khoán
-											</span>
-											<span
-												style={{
-													color: "#ffffff",
-													fontWeight: "300",
-													position: "relative",
-													right: "0.58rem",
-												}}
-											>
-												{activeItem.symbol}
-											</span>
-										</div>
-										<div
-											style={{
-												display: "flex",
-												justifyContent: "space-between",
-												alignItems: "center",
-												marginTop: "0.1875rem",
-											}}
-										>
-											<span>Tổng khối lượng CK</span>
-											<span
-												style={{
-													color: "#ffffff",
-													fontWeight: "300",
-													position: "relative",
-													right: "0.58rem",
-												}}
-											>
-												{formatMoney(activeItem.total_qty)}
-											</span>
-										</div>
-										<div
-											style={{
-												display: "flex",
-												justifyContent: "space-between",
-												alignItems: "center",
-												marginTop: "0.1875rem",
-											}}
-										>
-											<span>Giá vốn trung bình</span>
-											<span
-												style={{
-													color: "#ffffff",
-													fontWeight: "300",
-													position: "relative",
-													right: "0.58rem",
-												}}
-											>
-												{activeItem.avg_price.toFixed(2)}
-											</span>
-										</div>
-										<div
-											style={{
-												display: "flex",
-												justifyContent: "space-between",
-												alignItems: "center",
-												marginTop: "0.1875rem",
-											}}
-										>
-											<span>Gốc đầu tư</span>
-											<span
-												style={{
-													color: "#ffffff",
-													fontWeight: "300",
-													position: "relative",
-													right: "0.58rem",
-													fontSize: "0.838rem",
-												}}
-											>
-												{formatMoney(activeItem.cost_value)} đ
-											</span>
-										</div>
-										<div
-											style={{
-												display: "flex",
-												justifyContent: "space-between",
-												alignItems: "center",
-												marginTop: "0.1875rem",
-											}}
-										>
-											<span>Giá trị thị trường</span>
-											<span
-												style={{
-													color: "#ffffff",
-													fontWeight: "300",
-													position: "relative",
-													right: "0.58rem",
-													fontSize: "0.838rem",
-													top: "-0.1rem",
-												}}
-											>
-												{formatMoney(activeItem.market_value)} đ
-											</span>
-										</div>
-										<div
-											style={{
-												display: "flex",
-												justifyContent: "space-between",
-												alignItems: "center",
-												marginTop: "0.2875rem",
-												paddingLeft: "0.13rem",
-											}}
-										>
-											<span style={{ color: "#ffffff", fontWeight: "300" }}>
-												Lãi/lỗ dự kiến
-											</span>
-											<span
-												className={
-													activeItem.unrealized_pnl >= 0
-														? "text-success"
-														: "text-danger"
-												}
-												style={{
-													fontWeight: "400",
-													position: "relative",
-													right: "0.58rem",
-													fontSize: "0.885rem",
-												}}
-											>
-												{activeItem.unrealized_pnl >= 0 ? "+" : ""}{" "}
-												{formatMoney(activeItem.unrealized_pnl)} đ (
-												{activeItem.unrealized_pnl_percent.toFixed(2)}%)
-											</span>
-										</div>
-
-										<div
-											style={{
-												borderTop: "0.5px solid rgba(255,255,255,0.1)",
-												margin: "1.25rem 0 0.5rem 0",
-											}}
-										></div>
-
-										<div
-											style={{
-												display: "flex",
-												justifyContent: "space-between",
-												alignItems: "center",
-												position: "relative",
-												top: "0.25rem",
-												paddingLeft: "0.1875rem",
-											}}
-										>
-											<span style={{ color: "#ffffff", fontWeight: "300" }}>
-												Khối lượng CK khả dụng
-											</span>
-											<span
-												style={{
-													color: "#ffffff",
-													fontWeight: "300",
-													position: "relative",
-													right: "0.58rem",
-													fontSize: "0.885rem",
-												}}
-											>
-												{formatMoney(activeItem.available_qty)}
-											</span>
-										</div>
-										<div
-											style={{
-												display: "flex",
-												justifyContent: "space-between",
-												alignItems: "center",
-												position: "relative",
-												top: "0.25rem",
-												paddingLeft: "0.1875rem",
-											}}
-										>
-											<span>CK chờ về</span>
-											<span
-												style={{
-													color: "#ffffff",
-													fontWeight: "300",
-													position: "relative",
-													right: "0.58rem",
-													fontSize: "0.885rem",
-												}}
-											>
-												T0: {activeItem.t0_qty} T1:{" "}
-												{formatMoney(activeItem.t1_qty)} T2: {activeItem.t2_qty}
-											</span>
-										</div>
-										<div
-											style={{
-												display: "flex",
-												justifyContent: "space-between",
-												alignItems: "center",
-												position: "relative",
-												top: "0.455rem",
-												paddingLeft: "0.1875rem",
-											}}
-										>
-											<span>Quyền chờ về</span>
-											<span
-												style={{
-													color: "#ffffff",
-													fontWeight: "300",
-													position: "relative",
-													right: "0.58rem",
-													fontSize: "0.885rem",
-												}}
-											>
-												0
-											</span>
-										</div>
-										<div
-											style={{
-												display: "flex",
-												justifyContent: "space-between",
-												alignItems: "center",
-												position: "relative",
-												top: "0.565rem",
-												paddingLeft: "0.1875rem",
-											}}
-										>
-											<span>CK bị hạn chế</span>
-											<span
-												style={{
-													color: "#ffffff",
-													fontWeight: "300",
-													position: "relative",
-													right: "0.58rem",
-													fontSize: "0.885rem",
-												}}
-											>
-												0
-											</span>
-										</div>
-										<div
-											style={{
-												display: "flex",
-												justifyContent: "space-between",
-												alignItems: "center",
-												position: "relative",
-												top: "0.61rem",
-												paddingLeft: "0.1875rem",
-											}}
-										>
-											<span>Tỉ trọng trong danh mục</span>
-											<span
-												style={{
-													color: "#ffffff",
-													fontWeight: "300",
-													position: "relative",
-													right: "0.58rem",
-													fontSize: "0.885rem",
-												}}
-											>
-												41.16%
-											</span>
-										</div>
+											<X size={18} />
+										</button>
 									</div>
 
-									<div
-										className="action-buttons"
-										style={{
-											display: "flex",
-											gap: "0.5rem",
-											marginTop: "3.875rem",
-										}}
-									>
-										<button
-											style={{
-												flex: 1,
-												height: "2.975rem",
-												borderRadius: "0.75rem",
-												background: "#0ea369",
-												color: "#ffffff",
-												border: "none",
-												fontWeight: "600",
-												fontSize: "0.9375rem",
-												marginLeft: "0.1875rem",
-											}}
-											onClick={() =>
-												router.push(
-													`/dat-lenh?symbol=${activeItem.symbol}&side=M`,
-												)
-											}
-										>
-											Mua
-										</button>
-										<button
-											style={{
-												flex: 1,
-												height: "2.975rem",
-												borderRadius: "0.75rem",
-												background: "#f04b4b",
-												color: "#ffffff",
-												border: "none",
-												fontWeight: "600",
-												fontSize: "0.9375rem",
-												marginRight: "0.1875rem",
-											}}
-											onClick={() =>
-												router.push(
-													`/dat-lenh?symbol=${activeItem.symbol}&side=B`,
-												)
-											}
-										>
-											Bán
-										</button>
+									{/* Detail rows */}
+									<div style={{ display: "flex", flexDirection: "column", gap: 14, fontSize: 14 }}>
+										{[
+											{ label: "Tổng khối lượng", value: formatMoney(activeItem.total_qty) },
+											{ label: "KL khả dụng", value: formatMoney(activeItem.available_qty) },
+											{ label: "Giá vốn TB", value: activeItem.avg_price.toFixed(2) },
+											{ label: "Giá hiện tại", value: activeItem.current_price.toFixed(2) },
+											{ label: "Giá trị vốn", value: `${formatMoney(activeItem.cost_value)} đ` },
+											{ label: "Giá trị thị trường", value: `${formatMoney(activeItem.market_value)} đ` },
+										].map((row, i) => (
+											<div key={i} style={{ display: "flex", justifyContent: "space-between" }}>
+												<span style={{ color: "var(--text-secondary)" }}>{row.label}</span>
+												<span style={{ fontWeight: 500 }}>{row.value}</span>
+											</div>
+										))}
+
+										<div style={{ height: 1, background: "var(--border-color)" }} />
+
+										<div style={{ display: "flex", justifyContent: "space-between" }}>
+											<span style={{ color: "var(--text-secondary)" }}>Lãi/lỗ dự kiến</span>
+											<span style={{ fontWeight: 600, color: pnlColor(activeItem.unrealized_pnl) }}>
+												{activeItem.unrealized_pnl > 0 ? "+" : ""}
+												{formatMoney(activeItem.unrealized_pnl)} đ ({activeItem.unrealized_pnl_percent.toFixed(2)}%)
+											</span>
+										</div>
 									</div>
 								</div>
 							</>

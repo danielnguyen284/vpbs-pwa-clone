@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { BarChart3, Briefcase, ClipboardList, Settings, ArrowUpDown } from "lucide-react";
 
 export default function BottomNav() {
 	const pathname = usePathname();
@@ -9,65 +10,43 @@ export default function BottomNav() {
 	return (
 		<nav className="bottom-nav">
 			<Link
-				href="/bang-gia"
-				className={`nav-item ${pathname === "/bang-gia" ? "active" : ""}`}
-			>
-				<img
-					src={`/icons/bottom-nav/ic_price_list${pathname === "/bang-gia" ? "" : "2"}.svg`}
-					className="nav-icon"
-					alt="Bảng giá"
-				/>
-				<span>Bảng giá</span>
-			</Link>
-
-			<Link
 				href="/danh-muc"
 				className={`nav-item ${pathname === "/danh-muc" ? "active" : ""}`}
 			>
-				<img
-					src={`/icons/bottom-nav/ic_category${pathname === "/danh-muc" ? "_selected" : ""}.svg`}
-					className="nav-icon"
-					alt="Danh mục"
-				/>
+				<Briefcase size={20} strokeWidth={pathname === "/danh-muc" ? 2.2 : 1.5} />
 				<span>Danh mục</span>
-			</Link>
-
-			{/* FAB for Order */}
-			<Link href="/dat-lenh" className="nav-item2">
-				<div className="nav-fab-container">
-					<img
-						src="/icons/bottom-nav/ic_order.svg"
-						style={{ width: "1.6rem", height: "1.6rem" }}
-						alt="Đặt lệnh"
-					/>
-				</div>
 			</Link>
 
 			<Link
 				href="/so-lenh"
 				className={`nav-item ${pathname === "/so-lenh" ? "active" : ""}`}
 			>
-				<img
-					src={`/icons/bottom-nav/ic_order_book${pathname === "/so-lenh" ? "_selected" : ""}.svg`}
-					className="nav-icon"
-					alt="Sổ lệnh"
-				/>
+				<ClipboardList size={20} strokeWidth={pathname === "/so-lenh" ? 2.2 : 1.5} />
 				<span>Sổ lệnh</span>
+			</Link>
+
+			{/* FAB for Order */}
+			<Link href="/dat-lenh" className="nav-item2">
+				<div className="nav-fab-container">
+					<ArrowUpDown size={20} strokeWidth={2} />
+				</div>
+			</Link>
+
+			<Link
+				href="/sao-ke"
+				className={`nav-item ${pathname === "/sao-ke" ? "active" : ""}`}
+			>
+				<BarChart3 size={20} strokeWidth={pathname === "/sao-ke" ? 2.2 : 1.5} />
+				<span>Sao kê</span>
 			</Link>
 
 			<Link
 				href="/tien-ich"
 				className={`nav-item ${pathname === "/tien-ich" ? "active" : ""}`}
 			>
-				<img
-					src={`/icons/bottom-nav/ic_service${pathname === "/tien-ich" ? "_selected" : ""}.svg`}
-					className="nav-icon"
-					alt="Tiện ích"
-				/>
-				<span>Tiện ích</span>
+				<Settings size={20} strokeWidth={pathname === "/tien-ich" ? 2.2 : 1.5} />
+				<span>Cài đặt</span>
 			</Link>
-
-			{/* <div className="home-indicator" /> */}
 		</nav>
 	);
 }

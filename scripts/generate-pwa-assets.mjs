@@ -18,7 +18,7 @@ if (!existsSync(splashDir)) mkdirSync(splashDir, { recursive: true });
 if (!existsSync(screenshotsDir)) mkdirSync(screenshotsDir, { recursive: true });
 
 const SOURCE_ICON = join(PUBLIC, 'icon-512x512.png');
-const BG_COLOR = { r: 18, g: 22, b: 32, alpha: 1 }; // #121620
+const BG_COLOR = { r: 10, g: 14, b: 26, alpha: 1 }; // #0A0E1A (new VTS Invest bg)
 
 // ---- 1. Apple Touch Icon 180x180 ----
 async function generateAppleTouchIcon() {
@@ -83,7 +83,7 @@ async function generateSplashScreen(width, height) {
   console.log(`✅ splash ${width}x${height}`);
 }
 
-// ---- 3. Screenshots for manifest (dark themed placeholder) ----
+// ---- 3. Screenshots for manifest ----
 async function generateScreenshot(width, height, label, filename) {
   const iconSize = Math.round(Math.min(width, height) * 0.3);
   const iconBuffer = await sharp(SOURCE_ICON)
@@ -98,7 +98,7 @@ async function generateScreenshot(width, height, label, filename) {
   const textSvg = Buffer.from(`
     <svg width="${width}" height="${height}">
       <text x="${width / 2}" y="${top + iconSize + 60}" 
-        font-family="Arial, sans-serif" font-size="36" font-weight="bold"
+        font-family="Inter, Arial, sans-serif" font-size="36" font-weight="bold"
         fill="white" text-anchor="middle">${label}</text>
     </svg>
   `);
@@ -134,8 +134,8 @@ async function main() {
   }
 
   console.log('\n📸 Generating manifest screenshots...');
-  await generateScreenshot(1080, 1920, 'VPBS Demo - Giao dịch Chứng khoán', 'mobile-1.png');
-  await generateScreenshot(1080, 1920, 'VPBS Demo - Danh mục Đầu tư', 'mobile-2.png');
+  await generateScreenshot(1080, 1920, 'VTS Invest - Giao dịch Chứng khoán', 'mobile-1.png');
+  await generateScreenshot(1080, 1920, 'VTS Invest - Danh mục Đầu tư', 'mobile-2.png');
 
   console.log('\n✅ All PWA assets generated!');
 }

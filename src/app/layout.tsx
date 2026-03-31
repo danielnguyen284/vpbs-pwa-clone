@@ -7,18 +7,18 @@ export const viewport: Viewport = {
 	initialScale: 1,
 	maximumScale: 1,
 	userScalable: false,
-	themeColor: "#121620",
+	themeColor: "#0A0E1A",
 	viewportFit: "cover",
 };
 
 export const metadata: Metadata = {
-	title: "VPBS Demo",
-	description: "Mô phỏng Giao dịch Chứng khoán Cơ sở PWA",
+	title: "VTS Invest",
+	description: "Nền tảng Giao dịch Chứng khoán mô phỏng",
 	manifest: "/manifest.json",
 	appleWebApp: {
 		capable: true,
 		statusBarStyle: "black-translucent",
-		title: "VPBS Demo",
+		title: "VTS Invest",
 	},
 	icons: {
 		icon: "/icon-192x192.png",

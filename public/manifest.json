@@ -1,14 +1,14 @@
 {
-  "name": "VPBS PWA Demo",
-  "short_name": "VPBS Demo",
-  "description": "Mô phỏng Giao dịch Chứng khoán Cơ sở",
+  "name": "VTS Invest",
+  "short_name": "VTS Invest",
+  "description": "Nền tảng Giao dịch Chứng khoán mô phỏng",
   "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#121620",
-  "theme_color": "#121620",
+  "background_color": "#0A0E1A",
+  "theme_color": "#0A0E1A",
   "categories": ["finance", "business"],
   "prefer_related_applications": false,
   "icons": [
@@ -67,9 +67,9 @@
       "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Sao kê",
-      "short_name": "Sao kê",
-      "url": "/sao-ke",
+      "name": "Sổ lệnh",
+      "short_name": "Sổ lệnh",
+      "url": "/so-lenh",
       "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
     }
   ]
