@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { X } from "lucide-react";
 
-export default function OrderPlacementPage() {
+function OrderPlacementContent() {
 	const searchParams = useSearchParams();
 	const initialSymbol = searchParams.get("symbol") || "";
 	const initialSide = searchParams.get("side") === "B" ? "B" : "M";
@@ -208,5 +208,13 @@ export default function OrderPlacementPage() {
 				</form>
 			</main>
 		</>
+	);
+}
+
+export default function OrderPlacementPage() {
+	return (
+		<Suspense fallback={<div style={{ padding: 40, textAlign: "center" }}>Đang tải...</div>}>
+			<OrderPlacementContent />
+		</Suspense>
 	);
 }
