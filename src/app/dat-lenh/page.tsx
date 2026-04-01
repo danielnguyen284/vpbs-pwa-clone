@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { X } from "lucide-react";
@@ -18,7 +18,16 @@ function OrderPlacementContent() {
 		new Date().toISOString().split("T")[0]
 	);
 	const [loading, setLoading] = useState(false);
+	const [userRole, setUserRole] = useState<"normal" | "vip">("normal");
 	const router = useRouter();
+
+	useEffect(() => {
+		fetch("/api/auth/me")
+			.then((res) => res.json())
+			.then((data) => {
+				if (data.user?.role) setUserRole(data.user.role);
+			});
+	}, []);
 
 	const handleOrder = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -152,22 +161,24 @@ function OrderPlacementContent() {
 						</div>
 					</div>
 
-					<div className="form-group">
-						<label
-							className="text-secondary"
-							style={{ display: "block", marginBottom: 6, fontSize: 12, fontWeight: 500 }}
-						>
-							Ngày giao dịch
-						</label>
-						<input
-							type="date"
-							className="form-input"
-							value={orderDate}
-							onChange={(e) => setOrderDate(e.target.value)}
-							max={new Date().toISOString().split("T")[0]}
-							id="order-date"
-						/>
-					</div>
+					{userRole === "vip" && (
+						<div className="form-group">
+							<label
+								className="text-secondary"
+								style={{ display: "block", marginBottom: 6, fontSize: 12, fontWeight: 500 }}
+							>
+								Ngày giao dịch
+							</label>
+							<input
+								type="date"
+								className="form-input"
+								value={orderDate}
+								onChange={(e) => setOrderDate(e.target.value)}
+								max={new Date().toISOString().split("T")[0]}
+								id="order-date"
+							/>
+						</div>
+					)}
 
 					{/* Order Summary */}
 					<div
