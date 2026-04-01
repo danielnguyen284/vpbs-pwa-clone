@@ -343,7 +343,7 @@ export default function SaoKePage() {
 									{assetAllocationData.length > 0 ? (
 										<div style={{ height: 220 }}>
 											<ResponsiveContainer width="100%" height="100%">
-												<PieChart>
+												<PieChart style={{ outline: 'none' }}>
 													<Pie 
 														data={assetAllocationData} 
 														dataKey="value" 
@@ -354,13 +354,19 @@ export default function SaoKePage() {
 														outerRadius={80} 
 														stroke="none"
 														paddingAngle={2}
+														style={{ outline: 'none' }}
 													>
 														<Cell fill="#3b82f6" />
 														<Cell fill="#10b981" />
 													</Pie>
 													<RechartsTooltip 
-														formatter={(val) => formatMoney(val as number) + ' đ'} 
+														formatter={(val: any) => {
+															const total = balance + totalMarket;
+															const percent = total > 0 ? ((val / total) * 100).toFixed(2) : 0;
+															return `${formatMoney(val)} đ (${percent}%)`;
+														}}
 														contentStyle={{ background: 'var(--bg-secondary)', border: 'none', borderRadius: 8, fontSize: 13 }} 
+														itemStyle={{ fontWeight: 600, color: 'var(--text-primary)' }}
 													/>
 													<Legend wrapperStyle={{ fontSize: 12 }} />
 												</PieChart>
@@ -379,7 +385,7 @@ export default function SaoKePage() {
 									{stockAllocationData.length > 0 ? (
 										<div style={{ height: 260 }}>
 											<ResponsiveContainer width="100%" height="100%">
-												<PieChart>
+												<PieChart style={{ outline: 'none' }}>
 													<Pie 
 														data={stockAllocationData} 
 														dataKey="value" 
@@ -390,14 +396,19 @@ export default function SaoKePage() {
 														outerRadius={80} 
 														stroke="none"
 														paddingAngle={1}
+														style={{ outline: 'none' }}
 													>
 														{stockAllocationData.map((e, index) => (
 															<Cell key={index} fill={COLORS[index % COLORS.length]} />
 														))}
 													</Pie>
 													<RechartsTooltip 
-														formatter={(val) => formatMoney(val as number) + ' đ'} 
+														formatter={(val: any) => {
+															const percent = totalMarket > 0 ? ((val / totalMarket) * 100).toFixed(2) : 0;
+															return `${formatMoney(val)} đ (${percent}%)`;
+														}}
 														contentStyle={{ background: 'var(--bg-secondary)', border: 'none', borderRadius: 8, fontSize: 13 }} 
+														itemStyle={{ fontWeight: 600, color: 'var(--text-primary)' }}
 													/>
 													<Legend 
 														layout="vertical"
