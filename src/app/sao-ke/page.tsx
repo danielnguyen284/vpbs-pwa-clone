@@ -368,7 +368,16 @@ export default function SaoKePage() {
 														contentStyle={{ background: 'var(--bg-secondary)', border: 'none', borderRadius: 8, fontSize: 13 }} 
 														itemStyle={{ fontWeight: 600, color: 'var(--text-primary)' }}
 													/>
-													<Legend wrapperStyle={{ fontSize: 12 }} />
+													<Legend 
+														wrapperStyle={{ fontSize: 12 }} 
+														formatter={(value) => {
+															const item = assetAllocationData.find(x => x.name === value);
+															const val = item ? item.value : 0;
+															const total = balance + totalMarket;
+															const percent = total > 0 ? ((val / total) * 100).toFixed(2) : 0;
+															return `${value} (${percent}%)`;
+														}}
+													/>
 												</PieChart>
 											</ResponsiveContainer>
 										</div>
@@ -415,6 +424,12 @@ export default function SaoKePage() {
 														verticalAlign="middle"
 														align="right"
 														wrapperStyle={{ fontSize: 12, lineHeight: '24px' }} 
+														formatter={(value) => {
+															const item = stockAllocationData.find(x => x.name === value);
+															const val = item ? item.value : 0;
+															const percent = totalMarket > 0 ? ((val / totalMarket) * 100).toFixed(2) : 0;
+															return `${value} (${percent}%)`;
+														}}
 													/>
 												</PieChart>
 											</ResponsiveContainer>
