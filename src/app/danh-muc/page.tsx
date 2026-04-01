@@ -119,7 +119,7 @@ export default function PortfolioPage() {
 								justifyContent: "space-between",
 								marginTop: 12,
 								paddingTop: 12,
-								borderTop: "1px solid rgba(255,255,255,0.06)",
+								borderTop: "1px solid var(--border-color)",
 							}}>
 								<div>
 									<div style={{ color: "var(--text-secondary)", fontSize: 11, marginBottom: 2 }}>

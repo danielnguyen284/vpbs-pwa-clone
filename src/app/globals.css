@@ -1,39 +1,39 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-	/* Core palette */
-	--bg-primary: #0A0E1A;
-	--bg-secondary: #111827;
-	--bg-tertiary: #1E293B;
-	--bg-card: rgba(255, 255, 255, 0.04);
+	/* Core palette — Light theme */
+	--bg-primary: #F8FAFC;
+	--bg-secondary: #FFFFFF;
+	--bg-tertiary: #F1F5F9;
+	--bg-card: rgba(0, 0, 0, 0.02);
 
-	--text-primary: #F1F5F9;
-	--text-secondary: #94A3B8;
-	--text-muted: #64748B;
-	--text-success: #10B981;
-	--text-danger: #EF4444;
-	--text-warning: #F59E0B;
+	--text-primary: #0F172A;
+	--text-secondary: #64748B;
+	--text-muted: #94A3B8;
+	--text-success: #16A34A;
+	--text-danger: #DC2626;
+	--text-warning: #D97706;
 
-	/* Accent */
-	--accent-primary: #2563EB;
-	--accent-secondary: #7C3AED;
-	--accent-gradient: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
-	--accent-glow: rgba(37, 99, 235, 0.25);
+	/* Accent — Dark green */
+	--accent-primary: #15803D;
+	--accent-secondary: #166534;
+	--accent-gradient: #15803D;
+	--accent-glow: rgba(21, 128, 61, 0.18);
 
-	/* Glass */
-	--glass-bg: rgba(255, 255, 255, 0.05);
-	--glass-border: rgba(255, 255, 255, 0.08);
+	/* Glass — Light */
+	--glass-bg: rgba(255, 255, 255, 0.75);
+	--glass-border: rgba(0, 0, 0, 0.06);
 	--glass-blur: 20px;
 
 	/* Border */
-	--border-color: rgba(255, 255, 255, 0.08);
-	--border-accent: rgba(37, 99, 235, 0.3);
+	--border-color: rgba(0, 0, 0, 0.08);
+	--border-accent: rgba(21, 128, 61, 0.2);
 
 	/* Shadows */
-	--shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-	--shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
-	--shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
-	--shadow-glow: 0 0 24px rgba(37, 99, 235, 0.15);
+	--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+	--shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+	--shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+	--shadow-glow: 0 0 24px rgba(21, 128, 61, 0.1);
 
 	/* Spacing */
 	--radius-sm: 8px;
@@ -87,7 +87,7 @@ body {
 	min-height: 100vh;
 	position: relative;
 	background-color: var(--bg-primary);
-	box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
+	box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
 	display: flex;
 	flex-direction: column;
 }
@@ -109,12 +109,13 @@ body {
 
 /* ===== HEADER ===== */
 .header {
-	height: 56px;
+	min-height: 56px;
 	background: var(--bg-secondary);
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	padding: 0 16px;
+	padding-top: env(safe-area-inset-top);
 	font-size: 16px;
 	font-weight: 600;
 	border-bottom: 1px solid var(--border-color);
@@ -132,7 +133,7 @@ body {
 	width: 100%;
 	max-width: 500px;
 	height: 5.5rem;
-	background: rgba(17, 24, 39, 0.85);
+	background: rgba(255, 255, 255, 0.88);
 	backdrop-filter: blur(20px);
 	-webkit-backdrop-filter: blur(20px);
 	border-top: 1px solid var(--glass-border);
@@ -436,7 +437,7 @@ body {
 
 /* ===== GRADIENT CARD ===== */
 .gradient-card {
-	background: linear-gradient(135deg, rgba(37, 99, 235, 0.12) 0%, rgba(124, 58, 237, 0.08) 100%);
+	background: rgba(21, 128, 61, 0.06);
 	border: 1px solid var(--border-accent);
 	border-radius: var(--radius-lg);
 	padding: 20px;
@@ -517,7 +518,7 @@ body {
 }
 
 .loading-shimmer {
-	background: linear-gradient(90deg, var(--bg-tertiary) 25%, rgba(255,255,255,0.06) 50%, var(--bg-tertiary) 75%);
+	background: linear-gradient(90deg, var(--bg-tertiary) 25%, rgba(0,0,0,0.03) 50%, var(--bg-tertiary) 75%);
 	background-size: 200% 100%;
 	animation: shimmer 1.5s infinite;
 	border-radius: var(--radius-md);

@@ -7,7 +7,7 @@ export const viewport: Viewport = {
 	initialScale: 1,
 	maximumScale: 1,
 	userScalable: false,
-	themeColor: "#0A0E1A",
+	themeColor: "#F8FAFC",
 	viewportFit: "cover",
 };
 
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 	manifest: "/manifest.json",
 	appleWebApp: {
 		capable: true,
-		statusBarStyle: "black-translucent",
+		statusBarStyle: "default",
 		title: "VTS Invest",
 	},
 	icons: {
@@ -39,7 +39,7 @@ export default function RootLayout({
 				<meta name="apple-mobile-web-app-capable" content="yes" />
 				<meta
 					name="apple-mobile-web-app-status-bar-style"
-					content="black-translucent"
+					content="default"
 				/>
 				<link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
 
