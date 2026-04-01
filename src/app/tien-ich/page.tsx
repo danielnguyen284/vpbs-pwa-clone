@@ -3,19 +3,28 @@
 import { useState, useEffect } from "react";
 import BottomNav from "@/components/BottomNav";
 import { useRouter } from "next/navigation";
-import { Wallet, LogOut, RotateCcw, Plus } from "lucide-react";
+import { Wallet, LogOut, RotateCcw, Plus, Moon, Sun } from "lucide-react";
 
 export default function UtilitiesPage() {
 	const [balance, setBalance] = useState<number | null>(null);
 	const [customAmount, setCustomAmount] = useState("");
+	const [isDark, setIsDark] = useState(false);
+	const [mounted, setMounted] = useState(false);
 	const router = useRouter();
 
 	useEffect(() => {
+		setMounted(true);
 		fetch("/api/auth/me")
 			.then((res) => res.json())
 			.then((data) => {
 				if (data.user) setBalance(data.user.cash_balance);
 			});
+			
+		// Initialize theme state
+		const isDarkMode = 
+			document.documentElement.classList.contains("dark") || 
+			localStorage.getItem("theme") === "dark";
+		setIsDark(isDarkMode);
 	}, []);
 
 	const handleAddFunds = async (amount: number) => {
@@ -58,6 +67,18 @@ export default function UtilitiesPage() {
 			window.location.reload();
 		} catch (err: any) {
 			alert(err.message);
+		}
+	};
+
+	const toggleTheme = () => {
+		const newTheme = !isDark;
+		setIsDark(newTheme);
+		if (newTheme) {
+			document.documentElement.classList.add("dark");
+			localStorage.setItem("theme", "dark");
+		} else {
+			document.documentElement.classList.remove("dark");
+			localStorage.setItem("theme", "light");
 		}
 	};
 
@@ -157,6 +178,22 @@ export default function UtilitiesPage() {
 
 				{/* Actions */}
 				<div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+					<button className="btn-ghost" onClick={toggleTheme} id="toggle-theme">
+						<div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+							{mounted ? (
+								<>
+									{isDark ? <Sun size={16} /> : <Moon size={16} />}
+									{isDark ? "Chế độ Sáng" : "Chế độ Tối"}
+								</>
+							) : (
+								<>
+									<Moon size={16} style={{ visibility: "hidden" }} />
+									<span style={{ visibility: "hidden" }}>Chế độ Tối</span>
+								</>
+							)}
+						</div>
+					</button>
+
 					<button className="btn-danger" onClick={handleReset} id="reset-data">
 						<div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
 							<RotateCcw size={16} />

@@ -6,7 +6,7 @@ import Order from "@/models/Order";
 import Portfolio from "@/models/Portfolio";
 import RealizedPnL from "@/models/RealizedPnL";
 import { verifyToken } from "@/lib/auth";
-import { fetchDailyOHLC } from "@/lib/vps";
+import { fetchDailyOHLC, fetchTradingHistoryDates } from "@/lib/vps";
 
 export async function GET() {
 	try {
@@ -62,6 +62,15 @@ export async function POST(req: Request) {
 		let status = "Chờ khớp";
 		let filledPrice: number | undefined;
 
+		// Check if weekend
+		const isWeekend = requestedDate.getDay() === 0 || requestedDate.getDay() === 6;
+		if (isWeekend) {
+			return NextResponse.json(
+				{ error: "Thị trường chứng khoán đóng cửa. Không thể giao dịch vào Thứ 7 và Chủ Nhật." },
+				{ status: 400 },
+			);
+		}
+
 		// Fetch VPS data to match order
 		const ohlc = await fetchDailyOHLC(symbol, requestedDate);
 
@@ -83,7 +92,7 @@ export async function POST(req: Request) {
 			}
 		} else {
 			return NextResponse.json(
-				{ error: "Không tìm thấy dữ liệu lịch sử giá giao dịch cho ngày này." },
+				{ error: "Thị trường đóng cửa hoặc không có dữ liệu giao dịch cho ngày này (Ngày Lễ)." },
 				{ status: 400 },
 			);
 		}
@@ -131,29 +140,43 @@ export async function POST(req: Request) {
 				);
 			}
 
-			// Calculate available_qty for sell day (diffDays >= 2)
-			const orderTsUTC = Date.UTC(
-				requestedDate.getUTCFullYear(),
-				requestedDate.getUTCMonth(),
-				requestedDate.getUTCDate(),
-			);
 			let availableQty = 0;
 			const availableLots: { lot: any; index: number }[] = [];
 
-			portfolioDoc.lots.forEach((lot: any, idx: number) => {
-				const lotTsUTC = Date.UTC(
-					lot.date.getUTCFullYear(),
-					lot.date.getUTCMonth(),
-					lot.date.getUTCDate(),
-				);
-				const diffDays = Math.floor(
-					(orderTsUTC - lotTsUTC) / (1000 * 3600 * 24),
-				);
-				if (diffDays >= 2) {
-					availableQty += lot.qty;
-					availableLots.push({ lot, index: idx });
-				}
-			});
+			if (portfolioDoc.lots && portfolioDoc.lots.length > 0) {
+				const earliestLotTs = portfolioDoc.lots.reduce((min: number, lot: any) => {
+					const ls = new Date(lot.date).getTime();
+					return ls < min ? ls : min;
+				}, requestedDate.getTime());
+
+				const tradingDates = await fetchTradingHistoryDates(symbol, new Date(earliestLotTs), requestedDate);
+				const requestedDateStr = requestedDate.toISOString().split("T")[0];
+
+				portfolioDoc.lots.forEach((lot: any, idx: number) => {
+					const lotDate = new Date(lot.date);
+					const lotUTC = Date.UTC(
+						lotDate.getUTCFullYear(),
+						lotDate.getUTCMonth(),
+						lotDate.getUTCDate(),
+					) / 1000;
+
+					const lotDateStr = lotDate.toISOString().split("T")[0];
+					let diffDays = 0;
+
+					if (lotDateStr === requestedDateStr) {
+						diffDays = 0;
+					} else {
+						for (const t of tradingDates) {
+							if (t > lotUTC) diffDays++;
+						}
+					}
+
+					if (diffDays >= 2) {
+						availableQty += lot.qty;
+						availableLots.push({ lot, index: idx });
+					}
+				});
+			}
 
 			if (availableQty < quantity) {
 				return NextResponse.json(

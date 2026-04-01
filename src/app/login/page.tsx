@@ -122,15 +122,6 @@ export default function LoginPage() {
 					{loading ? "Đang xử lý..." : "ĐĂNG NHẬP"}
 				</button>
 			</form>
-
-			{/* <div style={{ textAlign: "center", marginTop: 24, position: "relative", zIndex: 1 }}>
-				<p className="text-secondary" style={{ fontSize: 14 }}>
-					Chưa có tài khoản?{" "}
-					<Link href="/register" className="text-accent" style={{ fontWeight: 600 }}>
-						Đăng ký ngay
-					</Link>
-				</p>
-			</div> */}
 		</div>
 	);
 }

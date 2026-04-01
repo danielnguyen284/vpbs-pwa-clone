@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
-import { TrendingUp, TrendingDown, X } from "lucide-react";
+import { TrendingUp, TrendingDown, X, Eye, EyeOff, ChevronsUpDown, ChevronUp, ChevronDown } from "lucide-react";
+
+type SortKey = "symbol" | "avg_price" | "total_qty" | "unrealized_pnl" | null;
+type SortDirection = "asc" | "desc";
 
 interface PortfolioItem {
 	_id: string;
@@ -16,6 +19,8 @@ interface PortfolioItem {
 	t2_qty: number;
 	current_price: number;
 	ref_price: number;
+	ceil_price: number;
+	floor_price: number;
 	market_value: number;
 	cost_value: number;
 	unrealized_pnl: number;
@@ -29,6 +34,8 @@ export default function PortfolioPage() {
 	const [balance, setBalance] = useState(0);
 	const [loading, setLoading] = useState(true);
 	const [activeItem, setActiveItem] = useState<PortfolioItem | null>(null);
+	const [hideData, setHideData] = useState(false);
+	const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection }>({ key: null, direction: "desc" });
 	const router = useRouter();
 
 	useEffect(() => {
@@ -49,11 +56,41 @@ export default function PortfolioPage() {
 	const totalDailyPnl = items.reduce((acc, curr) => acc + (curr.daily_pnl || 0), 0);
 	const totalAssets = balance + totalMarket;
 
-	const formatMoney = (val: number | null | undefined) =>
-		(val || 0).toLocaleString("vi-VN");
+	const handleSort = (key: SortKey) => {
+		let direction: SortDirection = "desc";
+		if (sortConfig.key === key && sortConfig.direction === "desc") {
+			direction = "asc";
+		}
+		setSortConfig({ key, direction });
+	};
 
-	const pnlColor = (val: number) =>
-		val >= 0 ? "var(--text-success)" : "var(--text-danger)";
+	const SortIcon = ({ columnKey }: { columnKey: SortKey }) => {
+		if (sortConfig.key !== columnKey) return <ChevronsUpDown size={12} style={{ opacity: 0.3 }} />;
+		return sortConfig.direction === "desc" ? <ChevronDown size={12} /> : <ChevronUp size={12} />;
+	};
+
+	const sortedItems = [...items].sort((a, b) => {
+		if (!sortConfig.key) return 0;
+		const aVal = a[sortConfig.key];
+		const bVal = b[sortConfig.key];
+		
+		if (aVal < bVal) return sortConfig.direction === "asc" ? -1 : 1;
+		if (aVal > bVal) return sortConfig.direction === "asc" ? 1 : -1;
+		return 0;
+	});
+
+	const formatMoney = (val: number | null | undefined) =>
+		Math.round(val || 0).toLocaleString("vi-VN");
+
+	const pnlColor = (val: number) => {
+		if (Math.abs(val) < 0.01) return "#eab308";
+		return val > 0 ? "var(--text-success)" : "var(--text-danger)";
+	};
+
+	const pnlBgColor = (val: number) => {
+		if (Math.abs(val) < 0.01) return "rgba(234, 179, 8, 0.1)"; // Yellow bg
+		return val > 0 ? "rgba(16,185,129,0.1)" : "rgba(239,68,68,0.1)"; // Green bg or Red bg
+	};
 
 	return (
 		<>
@@ -83,32 +120,49 @@ export default function PortfolioPage() {
 						{/* Summary Card */}
 						<div className="gradient-card" style={{ marginBottom: 20 }}>
 							{/* Total Assets Row */}
-							<div style={{ marginBottom: 16 }}>
-								<div style={{ color: "var(--text-secondary)", fontSize: 12, marginBottom: 4 }}>
-									Tổng tài sản
+							<div style={{ marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+								<div>
+									<div style={{ color: "var(--text-secondary)", fontSize: 12, marginBottom: 4 }}>
+										Tổng tài sản
+									</div>
+									<div style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.01em", display: "flex", alignItems: "center", gap: 6 }}>
+										{hideData ? "***" : formatMoney(totalAssets)}
+										{!hideData && <span style={{ fontSize: 14, fontWeight: 500 }}>đ</span>}
+									</div>
 								</div>
-								<div style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.01em" }}>
-									{formatMoney(totalAssets)}
-									<span style={{ fontSize: 14, fontWeight: 500, marginLeft: 4 }}>đ</span>
-								</div>
+								<button
+									onClick={() => setHideData(!hideData)}
+									style={{
+										background: "none",
+										border: "none",
+										padding: 6,
+										cursor: "pointer",
+										color: "var(--text-secondary)",
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "center"
+									}}
+								>
+									{hideData ? <EyeOff size={20} /> : <Eye size={20} />}
+								</button>
 							</div>
 
 							{/* Stats Grid */}
 							<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
 								<div style={{ background: "var(--glass-bg)", borderRadius: "var(--radius-sm)", padding: "10px 12px" }}>
 									<div style={{ color: "var(--text-secondary)", fontSize: 11, marginBottom: 4 }}>
-										Giá trị thị trường
+										Giá trị vốn
 									</div>
 									<div style={{ fontSize: 14, fontWeight: 600 }}>
-										{formatMoney(totalMarket)} đ
+										{hideData ? "***" : `${formatMoney(totalCost)} đ`}
 									</div>
 								</div>
 								<div style={{ background: "var(--glass-bg)", borderRadius: "var(--radius-sm)", padding: "10px 12px" }}>
 									<div style={{ color: "var(--text-secondary)", fontSize: 11, marginBottom: 4 }}>
-										Tiền mặt
+										Giá trị thị trường
 									</div>
 									<div style={{ fontSize: 14, fontWeight: 600 }}>
-										{formatMoney(balance)} đ
+										{hideData ? "***" : `${formatMoney(totalMarket)} đ`}
 									</div>
 								</div>
 							</div>
@@ -126,14 +180,14 @@ export default function PortfolioPage() {
 										Lãi/lỗ dự kiến
 									</div>
 									<div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-										<span style={{ fontSize: 14, fontWeight: 600, color: pnlColor(totalPnl) }}>
-											{totalPnl > 0 ? "+" : ""}{formatMoney(totalPnl)} đ
+										<span style={{ fontSize: 14, fontWeight: 600, color: hideData ? "var(--text-secondary)" : pnlColor(totalPnl) }}>
+											{hideData ? "***" : `${totalPnl > 0 ? "+" : ""}${formatMoney(totalPnl)} đ`}
 										</span>
 										<span style={{
 											fontSize: 12,
 											fontWeight: 500,
 											color: pnlColor(totalPnl),
-											background: totalPnl >= 0 ? "rgba(16,185,129,0.1)" : "rgba(239,68,68,0.1)",
+											background: pnlBgColor(totalPnl),
 											padding: "2px 6px",
 											borderRadius: 4,
 										}}>
@@ -145,8 +199,8 @@ export default function PortfolioPage() {
 									<div style={{ color: "var(--text-secondary)", fontSize: 11, marginBottom: 2 }}>
 										Trong ngày
 									</div>
-									<span style={{ fontSize: 14, fontWeight: 600, color: pnlColor(totalDailyPnl) }}>
-										{totalDailyPnl > 0 ? "+" : ""}{formatMoney(totalDailyPnl)} đ
+									<span style={{ fontSize: 14, fontWeight: 600, color: hideData ? "var(--text-secondary)" : pnlColor(totalDailyPnl) }}>
+										{hideData ? "***" : `${totalDailyPnl > 0 ? "+" : ""}${formatMoney(totalDailyPnl)} đ`}
 									</span>
 								</div>
 							</div>
@@ -165,14 +219,22 @@ export default function PortfolioPage() {
 								letterSpacing: "0.05em",
 							}}
 						>
-							<span style={{ flex: 1.2 }}>Mã CK</span>
-							<span style={{ flex: 1, textAlign: "right" }}>Giá vốn</span>
-							<span style={{ flex: 0.8, textAlign: "right" }}>KL</span>
-							<span style={{ flex: 1.4, textAlign: "right" }}>Lãi/lỗ</span>
+							<div onClick={() => handleSort("symbol")} style={{ flex: 1.6, display: "flex", alignItems: "center", gap: 2, cursor: "pointer" }}>
+								Mã CK <SortIcon columnKey="symbol" />
+							</div>
+							<div onClick={() => handleSort("avg_price")} style={{ flex: 0.9, display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 2, cursor: "pointer" }}>
+								Giá vốn <SortIcon columnKey="avg_price" />
+							</div>
+							<div onClick={() => handleSort("total_qty")} style={{ flex: 0.7, display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 2, cursor: "pointer" }}>
+								KL <SortIcon columnKey="total_qty" />
+							</div>
+							<div onClick={() => handleSort("unrealized_pnl")} style={{ flex: 1.2, display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 2, cursor: "pointer" }}>
+								Lãi/lỗ <SortIcon columnKey="unrealized_pnl" />
+							</div>
 						</div>
 
 						{/* Stock Rows */}
-						{items.length === 0 ? (
+						{sortedItems.length === 0 ? (
 							<div style={{
 								textAlign: "center",
 								padding: "40px 0",
@@ -182,9 +244,24 @@ export default function PortfolioPage() {
 								Chưa có chứng khoán nào trong danh mục
 							</div>
 						) : (
-							items.map((stock, idx) => {
+							sortedItems.map((stock, idx) => {
 								const chg = stock.daily_change_percent || 0;
-								const chgColor = chg > 0 ? "var(--text-success)" : chg < 0 ? "var(--text-danger)" : "var(--text-secondary)";
+								
+								let chgColor = "var(--text-secondary)";
+								const eps = 0.01; // tolerance
+								
+								if (Math.abs(stock.current_price - stock.ceil_price) < eps) {
+									chgColor = "#c026d3"; // Tím (Trần)
+								} else if (Math.abs(stock.current_price - stock.floor_price) < eps) {
+									chgColor = "#06b6d4"; // Xanh lơ (Sàn)
+								} else if (Math.abs(stock.current_price - stock.ref_price) < eps) {
+									chgColor = "#eab308"; // Vàng (Tham chiếu)
+								} else if (chg > 0) {
+									chgColor = "var(--text-success)"; // Xanh lá
+								} else if (chg < 0) {
+									chgColor = "var(--text-danger)"; // Đỏ
+								}
+
 								const pnl = stock.unrealized_pnl;
 
 								return (
@@ -203,35 +280,35 @@ export default function PortfolioPage() {
 										}}
 									>
 										{/* Symbol */}
-										<div style={{ flex: 1.2 }}>
-											<div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>
+										<div style={{ flex: 1.6, minWidth: 0 }}>
+											<div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>
 												{stock.symbol}
 											</div>
-											<div style={{ fontSize: 12, color: chgColor }}>
-												{stock.current_price.toFixed(2)} ({chg >= 0 ? "+" : ""}
+											<div style={{ fontSize: 12, color: chgColor, whiteSpace: "nowrap" }}>
+												{stock.current_price.toFixed(2)} ({chg > 0 ? "+" : ""}
 												{chg.toFixed(2)}%)
 											</div>
 										</div>
 
 										{/* Avg Cost */}
-										<div style={{ flex: 1, textAlign: "right", fontSize: 13, fontWeight: 500 }}>
+										<div style={{ flex: 0.9, textAlign: "right", fontSize: 13, fontWeight: 500 }}>
 											{stock.avg_price.toFixed(2)}
 										</div>
 
 										{/* Quantity */}
-										<div style={{ flex: 0.8, textAlign: "right", fontSize: 13, fontWeight: 500 }}>
-											{formatMoney(stock.total_qty)}
+										<div style={{ flex: 0.7, textAlign: "right", fontSize: 13, fontWeight: 500 }}>
+											{hideData ? "***" : formatMoney(stock.total_qty)}
 										</div>
 
 										{/* PNL */}
-										<div style={{ flex: 1.4, textAlign: "right" }}>
+										<div style={{ flex: 1.2, textAlign: "right" }}>
 											<div style={{
 												fontSize: 13,
 												fontWeight: 600,
-												color: pnlColor(pnl),
+												color: hideData ? "var(--text-secondary)" : pnlColor(pnl),
 												marginBottom: 2,
 											}}>
-												{pnl > 0 ? "+" : ""}{formatMoney(pnl)} đ
+												{hideData ? "***" : `${pnl > 0 ? "+" : ""}${formatMoney(pnl)} đ`}
 											</div>
 											<div style={{
 												fontSize: 11,
@@ -260,13 +337,10 @@ export default function PortfolioPage() {
 									{/* Header */}
 									<div style={{
 										display: "flex",
-										justifyContent: "space-between",
+										justifyContent: "flex-end",
 										alignItems: "center",
-										marginBottom: 20,
+										marginBottom: 10,
 									}}>
-										<h3 style={{ fontSize: 18, fontWeight: 700 }}>
-											{activeItem.symbol}
-										</h3>
 										<button
 											onClick={() => setActiveItem(null)}
 											style={{
@@ -282,15 +356,14 @@ export default function PortfolioPage() {
 										</button>
 									</div>
 
-									{/* Detail rows */}
 									<div style={{ display: "flex", flexDirection: "column", gap: 14, fontSize: 14 }}>
+										{/* Section 1 */}
 										{[
-											{ label: "Tổng khối lượng", value: formatMoney(activeItem.total_qty) },
-											{ label: "KL khả dụng", value: formatMoney(activeItem.available_qty) },
-											{ label: "Giá vốn TB", value: activeItem.avg_price.toFixed(2) },
-											{ label: "Giá hiện tại", value: activeItem.current_price.toFixed(2) },
-											{ label: "Giá trị vốn", value: `${formatMoney(activeItem.cost_value)} đ` },
-											{ label: "Giá trị thị trường", value: `${formatMoney(activeItem.market_value)} đ` },
+											{ label: "Mã chứng khoán", value: activeItem.symbol },
+											{ label: "Tổng khối lượng CK", value: hideData ? "***" : formatMoney(activeItem.total_qty) },
+											{ label: "Giá vốn trung bình", value: hideData ? "***" : activeItem.avg_price.toFixed(2) },
+											{ label: "Gốc đầu tư", value: hideData ? "***" : `${formatMoney(activeItem.cost_value)} đ` },
+											{ label: "Giá trị thị trường", value: hideData ? "***" : `${formatMoney(activeItem.market_value)} đ` },
 										].map((row, i) => (
 											<div key={i} style={{ display: "flex", justifyContent: "space-between" }}>
 												<span style={{ color: "var(--text-secondary)" }}>{row.label}</span>
@@ -298,15 +371,28 @@ export default function PortfolioPage() {
 											</div>
 										))}
 
-										<div style={{ height: 1, background: "var(--border-color)" }} />
-
 										<div style={{ display: "flex", justifyContent: "space-between" }}>
 											<span style={{ color: "var(--text-secondary)" }}>Lãi/lỗ dự kiến</span>
-											<span style={{ fontWeight: 600, color: pnlColor(activeItem.unrealized_pnl) }}>
-												{activeItem.unrealized_pnl > 0 ? "+" : ""}
-												{formatMoney(activeItem.unrealized_pnl)} đ ({activeItem.unrealized_pnl_percent.toFixed(2)}%)
+											<span style={{ fontWeight: 600, color: hideData ? "var(--text-secondary)" : pnlColor(activeItem.unrealized_pnl) }}>
+												{hideData ? "***" : `${activeItem.unrealized_pnl > 0 ? "+" : ""}${formatMoney(activeItem.unrealized_pnl)} đ `}
+												{!hideData && `(${activeItem.unrealized_pnl_percent.toFixed(2)}%)`}
+												{hideData && `${activeItem.unrealized_pnl_percent > 0 ? "+" : ""}${activeItem.unrealized_pnl_percent.toFixed(2)}%`}
 											</span>
 										</div>
+
+										<div style={{ height: 1, background: "var(--border-color)", margin: "4px 0" }} />
+
+										{/* Section 2 */}
+										{[
+											{ label: "Khối lượng CK khả dụng", value: hideData ? "***" : formatMoney(activeItem.available_qty) },
+											{ label: "CK chờ về", value: hideData ? "***" : `T0: ${activeItem.t0_qty} T1: ${activeItem.t1_qty} T2: ${activeItem.t2_qty}` },
+											{ label: "Tỉ trọng trong danh mục", value: totalMarket > 0 ? `${((activeItem.market_value / totalMarket) * 100).toFixed(2)}%` : "0%" },
+										].map((row, i) => (
+											<div key={`bottom-${i}`} style={{ display: "flex", justifyContent: "space-between" }}>
+												<span style={{ color: "var(--text-secondary)" }}>{row.label}</span>
+												<span style={{ fontWeight: 500 }}>{row.value}</span>
+											</div>
+										))}
 									</div>
 
 									{/* Buy / Sell buttons */}

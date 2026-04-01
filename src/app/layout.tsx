@@ -32,7 +32,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="vi">
+		<html lang="vi" suppressHydrationWarning>
 			<head>
 				<meta name="mobile-web-app-capable" content="yes" />
 				<meta name="apple-touch-fullscreen" content="yes" />
@@ -88,6 +88,24 @@ export default function RootLayout({
 				<link rel="apple-touch-startup-image"
 					href="/splash/apple-splash-750-1334.png"
 					media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" />
+					
+				<script
+					dangerouslySetInnerHTML={{
+						__html: `
+							(function() {
+								try {
+									var theme = localStorage.getItem('theme');
+									var isDark = theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+									if (isDark) {
+										document.documentElement.classList.add('dark');
+									} else {
+										document.documentElement.classList.remove('dark');
+									}
+								} catch (e) {}
+							})();
+						`,
+					}}
+				/>
 			</head>
 			<body>
 				<div className="app-container">{children}</div>
