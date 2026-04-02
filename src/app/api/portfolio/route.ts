@@ -52,25 +52,35 @@ export async function GET() {
 					}, new Date().getTime());
 
 					const tradingDates = await fetchTradingHistoryDates(p.symbol, new Date(earliestLotTs), today);
-					const todayUTCStr = today.toISOString().split("T")[0]; // Use to track if today overlaps
+					const tradingDateStrs = tradingDates.map(t => new Date(t * 1000).toISOString().split("T")[0]);
+					
+					// Get today's ICT date components
+					const todayICT = new Date(today.getTime() + 7 * 3600 * 1000);
+					const todayICTStr = todayICT.toISOString().split("T")[0];
 
 					p.lots.forEach((lot: any) => {
 						const lotDate = new Date(lot.date);
-						const lotUTC = Date.UTC(
-							lotDate.getUTCFullYear(),
-							lotDate.getUTCMonth(),
-							lotDate.getUTCDate(),
-						) / 1000;
-
-						const lotDateStr = lotDate.toISOString().split("T")[0];
+						const lotICT = new Date(lotDate.getTime() + 7 * 3600 * 1000);
+						const lotICTStr = lotICT.toISOString().split("T")[0];
 						
 						let diffDays = 0;
-						if (lotDateStr === todayUTCStr) {
-							// Exactly today -> T0 regardless of API response mapping
+						if (lotICTStr === todayICTStr) {
+							// Exactly today -> T0
 							diffDays = 0;
 						} else {
-							for (const t of tradingDates) {
-								if (t > lotUTC) diffDays++;
+							// 1. Count past trading days from API that are > lotICTStr and < todayICTStr
+							for (const tStr of tradingDateStrs) {
+								if (tStr > lotICTStr && tStr < todayICTStr) {
+									diffDays++;
+								}
+							}
+							
+							// 2. Count today if it's a weekday
+							if (todayICTStr > lotICTStr) {
+								const dayOfWeek = todayICT.getUTCDay(); // UTC of shifted gives 0-6 correct for ICT
+								if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+									diffDays++;
+								}
 							}
 						}
 
@@ -80,8 +90,11 @@ export async function GET() {
 					});
 				}
 
+				// Add 0.15% fee to avg_price to show actual break-even price
+				const trueAvgPrice = p.avg_price * 1.0015;
+
 				const marketValue = currentPrice * p.total_qty * 1000;
-				const costValue = p.avg_price * p.total_qty * 1000;
+				const costValue = trueAvgPrice * p.total_qty * 1000;
 				const unrealizedPnl = marketValue - costValue;
 				const unrealizedPnlPercent =
 					costValue > 0 ? (unrealizedPnl / costValue) * 100 : 0;
@@ -89,12 +102,12 @@ export async function GET() {
 				const old_qty = p.total_qty - t0_qty;
 				const dailyChange = currentPrice - refPrice;
 				const dailyChangePercent = refPrice > 0 ? (dailyChange / refPrice) * 100 : 0;
-				const dailyPnl = (dailyChange * old_qty * 1000) + ((currentPrice - p.avg_price) * t0_qty * 1000);
+				const dailyPnl = (dailyChange * old_qty * 1000) + ((currentPrice - trueAvgPrice) * t0_qty * 1000);
 
 				return {
 					_id: p._id,
 					symbol: p.symbol,
-					avg_price: p.avg_price,
+					avg_price: trueAvgPrice,
 					total_qty: p.total_qty,
 					available_qty,
 					t0_qty,
