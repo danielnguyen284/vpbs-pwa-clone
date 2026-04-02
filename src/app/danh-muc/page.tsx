@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import useSWR from "swr";
 import { useRouter } from "next/navigation";
 import BottomNav from "@/components/BottomNav";
 import { TrendingUp, TrendingDown, X, Eye, EyeOff, ChevronsUpDown, ChevronUp, ChevronDown } from "lucide-react";
@@ -30,24 +31,21 @@ interface PortfolioItem {
 }
 
 export default function PortfolioPage() {
-	const [items, setItems] = useState<PortfolioItem[]>([]);
-	const [balance, setBalance] = useState(0);
-	const [loading, setLoading] = useState(true);
+	const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+	const { data: userData } = useSWR("/api/auth/me", fetcher);
+	const { data: portfolioData, isLoading } = useSWR("/api/portfolio", fetcher, { 
+		refreshInterval: 10000 
+	});
+
+	const items: PortfolioItem[] = portfolioData?.portfolios || [];
+	const balance = userData?.user?.cash_balance || 0;
+	const loading = isLoading;
+
 	const [activeItem, setActiveItem] = useState<PortfolioItem | null>(null);
 	const [hideData, setHideData] = useState(false);
 	const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: SortDirection }>({ key: null, direction: "desc" });
 	const router = useRouter();
-
-	useEffect(() => {
-		Promise.all([
-			fetch("/api/auth/me").then((res) => res.json()),
-			fetch("/api/portfolio").then((res) => res.json()),
-		]).then(([userData, portfolioData]) => {
-			if (userData.user) setBalance(userData.user.cash_balance);
-			if (portfolioData.portfolios) setItems(portfolioData.portfolios);
-			setLoading(false);
-		});
-	}, []);
 
 	const totalCost = items.reduce((acc, curr) => acc + curr.cost_value, 0);
 	const totalMarket = items.reduce((acc, curr) => acc + curr.market_value, 0);

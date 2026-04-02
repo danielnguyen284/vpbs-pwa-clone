@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
+import useSWR from "swr";
 import Link from "next/link";
 import BottomNav from "@/components/BottomNav";
 import { ChevronLeft, TrendingUp, TrendingDown, Search } from "lucide-react";
@@ -31,23 +32,16 @@ export default function SaoKePage() {
 	const [perfPeriod, setPerfPeriod] = useState<'1W' | '1M' | '1Y'>('1M');
 	const [searchQuery, setSearchQuery] = useState('');
 
-	const [history, setHistory] = useState<PnLItem[]>([]);
-	const [items, setItems] = useState<PortfolioItem[]>([]);
-	const [balance, setBalance] = useState(0);
-	const [loading, setLoading] = useState(true);
+	const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-	useEffect(() => {
-		Promise.all([
-			fetch("/api/pnl").then((res) => res.json()),
-			fetch("/api/auth/me").then((res) => res.json()),
-			fetch("/api/portfolio").then((res) => res.json()),
-		]).then(([pnlData, userData, portfolioData]) => {
-			if (pnlData.history) setHistory(pnlData.history);
-			if (userData.user) setBalance(userData.user.cash_balance);
-			if (portfolioData.portfolios) setItems(portfolioData.portfolios);
-			setLoading(false);
-		});
-	}, []);
+	const { data: pnlData, isLoading: pnlLoading } = useSWR("/api/pnl", fetcher, { refreshInterval: 10000 });
+	const { data: userData, isLoading: userLoading } = useSWR("/api/auth/me", fetcher);
+	const { data: portfolioData, isLoading: portfolioLoading } = useSWR("/api/portfolio", fetcher, { refreshInterval: 10000 });
+
+	const history: PnLItem[] = pnlData?.history || [];
+	const items: PortfolioItem[] = portfolioData?.portfolios || [];
+	const balance = userData?.user?.cash_balance || 0;
+	const loading = pnlLoading || userLoading || portfolioLoading;
 
 	const formatMoney = (val: number | null | undefined) =>
 		Math.round(val || 0).toLocaleString("vi-VN");

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import useSWR from "swr";
 import BottomNav from "@/components/BottomNav";
 import { X } from "lucide-react";
 
@@ -16,22 +17,17 @@ interface OrderItem {
 }
 
 export default function OrderBookPage() {
-	const [orders, setOrders] = useState<OrderItem[]>([]);
-	const [loading, setLoading] = useState(true);
 	const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
 
 	const [typeFilter, setTypeFilter] = useState("ALL");
 	const [fromDate, setFromDate] = useState("");
 	const [toDate, setToDate] = useState("");
 
-	useEffect(() => {
-		fetch("/api/orders")
-			.then((res) => res.json())
-			.then((data) => {
-				if (data.orders) setOrders(data.orders);
-				setLoading(false);
-			});
-	}, []);
+	const fetcher = (url: string) => fetch(url).then((res) => res.json());
+	const { data, isLoading } = useSWR("/api/orders", fetcher, { refreshInterval: 10000 });
+
+	const orders: OrderItem[] = data?.orders || [];
+	const loading = isLoading;
 
 	const formatMoney = (val: number) => val.toLocaleString("vi-VN");
 
