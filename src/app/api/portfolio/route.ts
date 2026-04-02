@@ -33,9 +33,9 @@ export async function GET() {
 				let ceilPrice = p.avg_price * 1.07;
 				let floorPrice = p.avg_price * 0.93;
 
-				if (rt && rt.lastPrice) {
-					currentPrice = rt.lastPrice;
-					refPrice = rt.r !== undefined ? rt.r : rt.lastPrice;
+				if (rt) {
+					currentPrice = rt.lastPrice || rt.r || p.avg_price;
+					refPrice = rt.r !== undefined ? rt.r : currentPrice;
 					ceilPrice = rt.c !== undefined ? rt.c : currentPrice * 1.07;
 					floorPrice = rt.f !== undefined ? rt.f : currentPrice * 0.93;
 				}

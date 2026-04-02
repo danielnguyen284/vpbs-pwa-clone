@@ -126,8 +126,8 @@ export default function PortfolioPage() {
 										Tổng tài sản
 									</div>
 									<div style={{ fontSize: 22, fontWeight: 700, letterSpacing: "-0.01em", display: "flex", alignItems: "center", gap: 6 }}>
-										{hideData ? "***" : formatMoney(totalAssets)}
-										{!hideData && <span style={{ fontSize: 14, fontWeight: 500 }}>đ</span>}
+										{formatMoney(totalAssets)}
+										<span style={{ fontSize: 14, fontWeight: 500 }}>đ</span>
 									</div>
 								</div>
 								<button
@@ -154,7 +154,7 @@ export default function PortfolioPage() {
 										Giá trị vốn
 									</div>
 									<div style={{ fontSize: 14, fontWeight: 600 }}>
-										{hideData ? "***" : `${formatMoney(totalCost)} đ`}
+										{formatMoney(totalCost)} đ
 									</div>
 								</div>
 								<div style={{ background: "var(--glass-bg)", borderRadius: "var(--radius-sm)", padding: "10px 12px" }}>
@@ -162,7 +162,7 @@ export default function PortfolioPage() {
 										Giá trị thị trường
 									</div>
 									<div style={{ fontSize: 14, fontWeight: 600 }}>
-										{hideData ? "***" : `${formatMoney(totalMarket)} đ`}
+										{formatMoney(totalMarket)} đ
 									</div>
 								</div>
 							</div>
@@ -180,8 +180,8 @@ export default function PortfolioPage() {
 										Lãi/lỗ dự kiến
 									</div>
 									<div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-										<span style={{ fontSize: 14, fontWeight: 600, color: hideData ? "var(--text-secondary)" : pnlColor(totalPnl) }}>
-											{hideData ? "***" : `${totalPnl > 0 ? "+" : ""}${formatMoney(totalPnl)} đ`}
+										<span style={{ fontSize: 14, fontWeight: 600, color: pnlColor(totalPnl) }}>
+											{totalPnl > 0 ? "+" : ""}{formatMoney(totalPnl)} đ
 										</span>
 										<span style={{
 											fontSize: 12,
@@ -199,8 +199,8 @@ export default function PortfolioPage() {
 									<div style={{ color: "var(--text-secondary)", fontSize: 11, marginBottom: 2 }}>
 										Trong ngày
 									</div>
-									<span style={{ fontSize: 14, fontWeight: 600, color: hideData ? "var(--text-secondary)" : pnlColor(totalDailyPnl) }}>
-										{hideData ? "***" : `${totalDailyPnl > 0 ? "+" : ""}${formatMoney(totalDailyPnl)} đ`}
+									<span style={{ fontSize: 14, fontWeight: 600, color: pnlColor(totalDailyPnl) }}>
+										{totalDailyPnl > 0 ? "+" : ""}{formatMoney(totalDailyPnl)} đ
 									</span>
 								</div>
 							</div>
