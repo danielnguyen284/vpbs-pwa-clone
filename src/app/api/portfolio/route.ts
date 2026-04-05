@@ -90,8 +90,8 @@ export async function GET() {
 					});
 				}
 
-				// Add 0.15% fee to avg_price to show actual break-even price
-				const trueAvgPrice = p.avg_price * 1.0015;
+				// Use raw avg_price without fees
+				const trueAvgPrice = p.avg_price;
 
 				const marketValue = currentPrice * p.total_qty * 1000;
 				const costValue = trueAvgPrice * p.total_qty * 1000;

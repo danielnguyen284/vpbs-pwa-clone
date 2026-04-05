@@ -217,7 +217,7 @@ export async function POST(req: Request) {
 				portfolioDoc.total_qty -= quantity;
 
 				const buyValue = portfolioDoc.avg_price * quantity * 1000;
-				const pnlValue = proceedsAfterFee - buyValue;
+				const pnlValue = totalValue - buyValue; // Calculate raw PnL without subtracting fee and tax
 				const pnlPercent = buyValue === 0 ? 0 : (pnlValue / buyValue) * 100;
 
 				await RealizedPnL.create({
