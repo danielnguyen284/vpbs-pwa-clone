@@ -88,7 +88,7 @@ export default function UtilitiesPage() {
 				<div style={{ fontSize: 18, fontWeight: 700 }}>Cài đặt</div>
 			</header>
 
-			<main className="screen-container" style={{ padding: 16 }}>
+			<main className="screen-container" style={{ padding: "16px 16px 120px" }}>
 				{/* Balance Card */}
 				<div className="gradient-card" style={{ marginBottom: 24 }}>
 					<div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>

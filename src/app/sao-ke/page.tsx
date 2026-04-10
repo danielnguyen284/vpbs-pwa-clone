@@ -150,7 +150,7 @@ export default function SaoKePage() {
 				<div style={{ fontSize: 18, fontWeight: 700 }}>Sao kê</div>
 			</header>
 
-			<main className="screen-container" style={{ padding: "0 16px 16px" }}>
+			<main className="screen-container" style={{ padding: "0 16px 120px" }}>
 
 				{/* Tabs Selector */}
 				<div style={{ 

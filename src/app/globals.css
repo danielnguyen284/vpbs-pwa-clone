@@ -162,7 +162,7 @@ body {
 	bottom: 0;
 	width: 100%;
 	max-width: 500px;
-	height: 5.5rem;
+	height: calc(5.5rem + env(safe-area-inset-bottom)); /* Updated to include safe area */
 	background: var(--nav-bg);
 	backdrop-filter: blur(20px);
 	-webkit-backdrop-filter: blur(20px);

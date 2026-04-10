@@ -141,7 +141,7 @@ export default function OrderBookPage() {
 				</div>
 			</div>
 
-			<main className="screen-container" style={{ padding: 16 }}>
+			<main className="screen-container" style={{ padding: "16px 16px 120px" }}>
 				{loading ? (
 					<div>
 						{[1, 2, 3].map((i) => (

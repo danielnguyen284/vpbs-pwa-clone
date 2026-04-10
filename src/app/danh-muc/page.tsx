@@ -106,7 +106,7 @@ export default function PortfolioPage() {
 				</div>
 			</header>
 
-			<main className="screen-container" style={{ padding: "0 16px 16px" }}>
+			<main className="screen-container" style={{ padding: "0 16px 120px" }}>
 				{loading ? (
 					<div style={{ padding: "40px 0", textAlign: "center" }}>
 						<div className="loading-shimmer" style={{ height: 120, marginBottom: 16 }} />
