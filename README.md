@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VPBS PWA Clone
 
-## Getting Started
+Dự án này là một bản clone giao diện và chức năng nền web (PWA) của ứng dụng giao dịch VPBS. 
 
-First, run the development server:
+**⚠️ LƯU Ý QUAN TRỌNG: Dự án này CHỈ CLONE VỀ CÁCH TÍNH LÃI LỖ (P&L) của VPBS nhằm mục đích tham khảo. Đây không phải là một hệ thống giao dịch chứng khoán thực tế.**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Hướng dẫn cài đặt và chạy dự án
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Dự án này được xây dựng dựa trên framework [Next.js](https://nextjs.org/).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Yêu cầu môi trường
+- Node.js (phiên bản từ 18.x trở lên)
+- Một trong các package manager: npm, yarn, pnpm, hoặc bun
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Các bước chạy dự án ở môi trường phát triển (Development)
 
-## Learn More
+1. **Cài đặt các thư viện (dependencies):**
+   ```bash
+   npm install
+   # hoặc
+   yarn install
+   # hoặc
+   pnpm install
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Khởi chạy development server:**
+   ```bash
+   npm run dev
+   # hoặc
+   yarn dev
+   # hoặc
+   pnpm dev
+   # hoặc
+   bun dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Xem kết quả:**
+   Mở trình duyệt và truy cập vào địa chỉ [http://localhost:3000](http://localhost:3000) để xem ứng dụng.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🛠️ Cấu trúc và Công nghệ
+- **Next.js**: Framework React chính để xây dựng ứng dụng Frontend.
+- **PWA (Progressive Web App)**: Hỗ trợ cài đặt ứng dụng vào màn hình chính của điện thoại và trải nghiệm như một ứng dụng Native.
