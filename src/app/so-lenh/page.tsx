@@ -285,7 +285,7 @@ export default function OrderBookPage() {
 								{ label: "Khối lượng", value: formatMoney(selectedOrder.quantity) },
 								{
 									label: "Giá trị lệnh",
-									value: `${formatMoney(selectedOrder.price * selectedOrder.quantity)} đ`,
+									value: `${formatMoney(selectedOrder.price * selectedOrder.quantity * 1000)} đ`,
 								},
 								{
 									label: "Ngày đặt",
